@@ -46,7 +46,7 @@ async function fetchCharacter(id: String): Promise<Character> {
   const response = await fetch(
     `https://rickandmortyapi.com/api/character/${id}`,
   );
-  // await new Promise((resolve) => setTimeout(resolve, 5000));
+  console.log('Fetch URL:', `https://rickandmortyapi.com/api/character/${id}`);
   const data = await response.json();
   return data;
 }

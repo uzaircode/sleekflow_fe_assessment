@@ -19,6 +19,11 @@ async function fetchCharactersPage(params: {
     `https://rickandmortyapi.com/api/character?${queryParams.toString()}`,
   );
 
+  console.log(
+    'Fetch URL:',
+    `https://rickandmortyapi.com/api/character/?${queryParams.toString()}`,
+  );
+
   if (!response.ok) {
     return { results: [], info: { count: 0, pages: 0 } };
   }

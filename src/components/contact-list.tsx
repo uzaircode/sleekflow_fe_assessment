@@ -9,6 +9,7 @@ import {
   TableRow,
   TableCell,
   Pagination,
+  Spinner,
 } from '@heroui/react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -83,7 +84,11 @@ export default function ContactList({
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
 
-      <TableBody emptyContent="No rows to display." items={rows}>
+      <TableBody
+        emptyContent="No rows to display."
+        items={rows}
+        loadingContent={<Spinner />}
+      >
         {(item) => (
           <TableRow key={item.key} className="cursor-pointer">
             {(columnKey) => (
