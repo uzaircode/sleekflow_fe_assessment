@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import { useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import paths from '@/paths';
 
 interface Character {
   id: number;
@@ -69,6 +70,7 @@ export default function ContactList({
   return (
     <Table
       aria-label="Rick and Morty Contact"
+      isStriped
       bottomContent={
         totalPages > 1 ? (
           <div className="flex w-full justify-center">
@@ -97,7 +99,10 @@ export default function ContactList({
           <TableRow key={item.key}>
             {(columnKey) => (
               <TableCell>
-                <Link href={`/contact/${item.key}`} className="block w-full">
+                <Link
+                  href={paths.contactShow(item.key)}
+                  className="block w-full"
+                >
                   {columnKey === 'name' ? (
                     <User
                       name={item.name}

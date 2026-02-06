@@ -82,7 +82,7 @@ export default function FilterToolbar() {
       <Select
         placeholder="Filter by Gender"
         aria-label="Filter by Gender"
-        className="max-w-xs"
+        className="w-"
         isDisabled={isPending}
         selectedKeys={
           searchParams.get('gender') ? [searchParams.get('gender')!] : []

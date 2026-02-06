@@ -3,6 +3,8 @@ import ContactList from '@/components/contacts/contact-list';
 import FilterToolbar from '@/components/contacts/filter-toolbar';
 import { Suspense } from 'react';
 import { Spinner } from '@heroui/react';
+import paths from '@/paths';
+import { fetchCharactersContactList } from '@/queries/contacts';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -14,47 +16,15 @@ interface SearchPageProps {
   }>;
 }
 
-async function fetchCharacterBySearchInput(params: {
-  name: string;
-  status?: string;
-  species?: string;
-  gender?: string;
-  page?: string;
-}) {
-  const queryParams = new URLSearchParams();
-  if (params.name) queryParams.append('name', params.name);
-  if (params.status) queryParams.append('status', params.status);
-  if (params.species) queryParams.append('species', params.species);
-  if (params.gender) queryParams.append('gender', params.gender);
-  if (params.page) queryParams.append('page', params.page);
-
-  const response = await fetch(
-    `https://rickandmortyapi.com/api/character/?${queryParams.toString()}`,
-  );
-  console.log(
-    'Fetch URL:',
-    `https://rickandmortyapi.com/api/character/?${queryParams.toString()}`,
-  );
-  if (!response.ok) {
-    return { results: [], info: { count: 0, pages: 0 } };
-  }
-
-  const data = await response.json();
-  return {
-    results: data.results || [],
-    info: data.info,
-  };
-}
-
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const { name, status, species, gender, page } = params;
 
   if (!name) {
-    redirect('/');
+    redirect(paths.home());
   }
 
-  const data = await fetchCharacterBySearchInput(params);
+  const data = await fetchCharactersContactList(params);
 
   return (
     <div>

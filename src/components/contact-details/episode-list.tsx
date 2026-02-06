@@ -41,7 +41,7 @@ export default function EpisodeList({ episodes }: EpisodeTableProps) {
         <h2 id="episodes-heading" className="text-2xl font-bold mb-4">
           Episode Appearances
         </h2>
-        <Table aria-label="Episode appearances">
+        <Table aria-label="Episode appearances" isStriped>
           <TableHeader columns={episodeColumns}>
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>

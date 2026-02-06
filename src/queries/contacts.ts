@@ -55,10 +55,17 @@ export async function fetchCharactersContactList(params: {
   if (params.gender) queryParams.append('gender', params.gender);
   if (params.page) queryParams.append('page', params.page);
 
-  const response = await fetch(
-    `${API_BASE_URL}/character?${queryParams.toString()}`,
-    { cache: 'no-store' },
+  // PROOF: Log every fetch call with timestamp
+  const timestamp = new Date().toISOString();
+  const url = `${API_BASE_URL}/character?${queryParams.toString()}`;
+  console.log('🔴 [NO-STORE] Fetching at:', timestamp);
+  console.log('🔴 [NO-STORE] URL:', url);
+  console.log(
+    '🔴 [NO-STORE] Request ID:',
+    Math.random().toString(36).substring(7),
   );
+
+  const response = await fetch(url, { cache: 'no-store' });
 
   if (!response.ok) {
     return {
@@ -93,15 +100,29 @@ export async function fetchCharacterById(
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/character/${id}`, {
-      cache: 'no-store',
+    const url = `${API_BASE_URL}/character/${id}`;
+
+    console.log('🟡 Function called for character:', id);
+
+    const response = await fetch(url, {
+      next: { revalidate: 3600, tags: ['characters', `character-${id}`] },
     });
+
+    // Log AFTER fetch to see cache status
+    console.log(
+      '📊 Cache status:',
+      response.headers.get('x-vercel-cache') || 'UNKNOWN',
+    );
+    console.log('🔍 Response from:', response.url);
 
     if (!response.ok) {
       return null;
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('✅ Data retrieved for:', data.name);
+
+    return data;
   } catch (error) {
     console.error('Error fetching character:', error);
     return null;
@@ -117,7 +138,7 @@ export async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
 
   try {
     const response = await fetch(`${API_BASE_URL}/episode/${idsString}`, {
-      cache: 'no-store',
+      next: { revalidate: 3600, tags: ['episodes'] }, // Cache for 1 hour
     });
 
     if (!response.ok) {
