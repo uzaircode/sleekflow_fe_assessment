@@ -11,22 +11,6 @@ import {
   CardBody,
   Avatar,
 } from '@heroui/react';
-// import type { Metadata } from 'next';
-
-// type Props = {
-//   params: { id: string };
-// };
-
-// export async function generateMetadata({ params }: Props): Promise<Metadata> {
-//   // In production, fetch the contact name from API
-//   // For now, hardcoded:
-//   const contactName = 'Rick Sanchez';
-
-//   return {
-//     title: `${contactName} | SleekFlow`,
-//     description: `View information about ${contactName}`,
-//   };
-// }
 
 export default function ContactPage() {
   const episodeColumns = [
