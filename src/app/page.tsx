@@ -12,9 +12,11 @@ export const metadata: Metadata = {
 
 interface HomeProps {
   searchParams?: {
+    name?: string;
     status?: string;
     species?: string;
     gender?: string;
+    page?: string;
   };
 }
 

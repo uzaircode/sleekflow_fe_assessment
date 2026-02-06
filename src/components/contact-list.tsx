@@ -10,7 +10,7 @@ import {
   TableCell,
   Pagination,
 } from '@heroui/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 interface Character {
@@ -33,6 +33,7 @@ export default function ContactList({
   currentPage,
 }: ContactListProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const columns = [
@@ -53,7 +54,7 @@ export default function ContactList({
   const onPageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', page.toString());
-    router.push(`/?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
