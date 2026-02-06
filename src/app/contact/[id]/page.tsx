@@ -9,9 +9,10 @@ import {
   Card,
   CardBody,
   Avatar,
+  Button,
 } from '@heroui/react';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: {
@@ -42,13 +43,22 @@ interface Episode {
   episode: string;
 }
 
-async function fetchCharacter(id: String): Promise<Character> {
-  const response = await fetch(
-    `https://rickandmortyapi.com/api/character/${id}`,
-  );
-  console.log('Fetch URL:', `https://rickandmortyapi.com/api/character/${id}`);
-  const data = await response.json();
-  return data;
+async function fetchCharacter(id: string): Promise<Character | null> {
+  try {
+    const response = await fetch(
+      `https://rickandmortyapi.com/api/character/${id}`,
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching character:', error);
+    return null;
+  }
 }
 
 async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
@@ -63,6 +73,14 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const id = params.id;
   const character = await fetchCharacter(id);
+
+  if (!character) {
+    return {
+      title: 'Character Not Found | SleekFlow',
+      description: 'The requested character could not be found',
+    };
+  }
+
   return {
     title: `${character.name} | SleekFlow`,
     description: `View information about ${character.name}`,
@@ -71,6 +89,11 @@ export async function generateMetadata({
 
 export default async function ContactPage({ params }: PageProps) {
   const character = await fetchCharacter(params.id);
+
+  if (!character) {
+    notFound();
+  }
+
   const episodes = await fetchEpisodes(character.episode);
 
   return (
