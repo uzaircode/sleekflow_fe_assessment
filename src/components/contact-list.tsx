@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
 } from '@heroui/react';
+import Link from 'next/link';
 
 interface Character {
   id: number;
@@ -38,20 +39,23 @@ export default function ContactList({ characters }: ContactListProps) {
   }));
 
   return (
-    <Table aria-label="Rick and Morty Contact" selectionMode="single">
+    <Table isStriped aria-label="Rick and Morty Contact">
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
 
       <TableBody emptyContent="No rows to display." items={rows}>
         {(item) => (
-          <TableRow
-            key={item.key}
-            href={`/contact/${item.key}`}
-            className="cursor-pointer"
-          >
+          <TableRow key={item.key} className="cursor-pointer">
             {(columnKey) => (
-              <TableCell>{item[columnKey as keyof typeof item]}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/contact/${item.key}`}
+                  className="block w-full h-full"
+                >
+                  {item[columnKey as keyof typeof item]}
+                </Link>
+              </TableCell>
             )}
           </TableRow>
         )}

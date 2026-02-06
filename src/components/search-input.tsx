@@ -8,7 +8,7 @@ export default function SearchInput() {
   const searchParams = useSearchParams();
 
   return (
-    <Form method="get" action={actions.search}>
+    <Form action={actions.search}>
       <Input
         name="name"
         placeholder="Search by name..."

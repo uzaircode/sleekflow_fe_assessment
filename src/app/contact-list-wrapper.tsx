@@ -23,7 +23,7 @@ export default async function ContactListWrapper({
   }`;
 
   const response = await fetch(url);
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  // await new Promise((resolve) => setTimeout(resolve, 2000));
   const data = await response.json();
 
   return <ContactList characters={data.results} />;

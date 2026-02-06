@@ -1,3 +1,5 @@
+- note to the reviewer that this README.md was intended for technical and non technical reader.
+
 /_
 APP ROUTER:
 src > app > page.tsx
@@ -11,32 +13,6 @@ endpoint:- localhost:3000/search?term={name}
 path:
 i am aware that the approach of path is overkill of only 2 pages, i just simulate how the app would be if we decide to grow the app
 
-seo:
-contact list page:
-// import type { Metadata } from 'next';
-
-// export const metadata: Metadata = {
-// title: 'Contact List - SleekFlow',
-// description: 'View our list of contacts with their related information.',
-// };
-
-// import type { Metadata } from 'next';
-
-// type Props = {
-// params: { id: string };
-// };
-
-// export async function generateMetadata({ params }: Props): Promise<Metadata> {
-// // In production, fetch the contact name from API
-// // For now, hardcoded:
-// const contactName = 'Rick Sanchez';
-
-// return {
-// title: `${contactName} | SleekFlow`,
-// description: `View information about ${contactName}`,
-// };
-// }
-
 # note
 
 client component with ‘useSearchParams’ need to be wrapped with ‘Suspense’
@@ -48,7 +24,9 @@ https://www.udemy.com/course/next-js-the-complete-developers-guide/learn/lecture
 - NextUI was chosen for UI components to avoid reiventing common patterns. This approach keeps the codebase maintainable while allowing focus on functional requirements.
 - the commit is one as i use git squash to combine all my work in progress
   i run with the following command:
-  git add .
+  git add . .....
+  - note to the reviewer that usually in real work env i split the task into different branch with the name commit of the jira ticket, but to keep things simpler i dumb everything in the main
+- I used AI for accessibility
 
 # error handling
 

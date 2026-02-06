@@ -41,6 +41,7 @@ export default function FilterToolbar() {
     <div className="flex gap-4 mb-6 flex-wrap">
       <Select
         placeholder="Filter by Status"
+        aria-label="Filter by Status"
         className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
@@ -58,6 +59,7 @@ export default function FilterToolbar() {
 
       <Select
         placeholder="Filter by Species"
+        aria-label="Filter by Species"
         className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
@@ -75,6 +77,7 @@ export default function FilterToolbar() {
 
       <Select
         placeholder="Filter by Gender"
+        aria-label="Filter by Gender"
         className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
