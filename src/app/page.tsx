@@ -3,18 +3,36 @@ import { Suspense } from 'react';
 import { Select, SelectItem, Spinner } from '@heroui/react';
 import ContactListWrapper from './contact-list-wrapper';
 import type { Metadata } from 'next';
+import FilterToolbar from '@/components/filter-toolbar';
 
 export const metadata: Metadata = {
   title: 'Contact List - SleekFlow',
   description: 'View our list of contacts with their related information.',
 };
 
-export default async function Home() {
+interface HomeProps {
+  searchParams?: {
+    status?: string;
+    species?: string;
+    gender?: string;
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Contact List</h1>
+
+      <Suspense
+        fallback={
+          <div className="h-10 mb-6 animate-pulse bg-gray-100 rounded" />
+        }
+      >
+        <FilterToolbar />
+      </Suspense>
+
       <Suspense fallback={<Spinner />}>
-        <ContactListWrapper />
+        <ContactListWrapper searchParams={searchParams} />
       </Suspense>
     </div>
   );

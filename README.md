@@ -67,3 +67,13 @@ https://www.heroui.com/
           ))}
         </Select>
       </div> */}
+
+# Room for improvements
+
+- use GraphQL instead of REST APIs
+
+BEFORE SUBMISSION
+
+- make sure its mobile responsive
+- fulfill all the product requirements
+- readme file

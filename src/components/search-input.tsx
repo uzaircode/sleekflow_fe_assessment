@@ -14,6 +14,28 @@ export default function SearchInput() {
         placeholder="Search by name..."
         defaultValue={searchParams.get('name') || ''}
       />
+      {/* Hidden fields to preserve current filters */}
+      {searchParams.get('status') && (
+        <input
+          type="hidden"
+          name="status"
+          value={searchParams.get('status')!}
+        />
+      )}
+      {searchParams.get('species') && (
+        <input
+          type="hidden"
+          name="species"
+          value={searchParams.get('species')!}
+        />
+      )}
+      {searchParams.get('gender') && (
+        <input
+          type="hidden"
+          name="gender"
+          value={searchParams.get('gender')!}
+        />
+      )}
     </Form>
   );
 }
