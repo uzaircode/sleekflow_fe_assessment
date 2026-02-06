@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import ContactList from '@/components/contact-list';
-import FilterToolbar from '@/components/filter-toolbar';
+import ContactList from '@/components/contacts/contact-list';
+import FilterToolbar from '@/components/contacts/filter-toolbar';
 import { Suspense } from 'react';
 import { Spinner } from '@heroui/react';
 

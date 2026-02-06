@@ -1,4 +1,4 @@
-import ContactList from '@/components/contact-list';
+import ContactList from '@/components/contacts/contact-list';
 import { fetchCharactersContactList } from '@/queries/contacts';
 
 export default async function ContactListWrapper({

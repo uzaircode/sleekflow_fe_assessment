@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { Spinner } from '@heroui/react';
 import ContactListWrapper from './contact-list-wrapper';
 import type { Metadata } from 'next';
-import FilterToolbar from '@/components/filter-toolbar';
+import FilterToolbar from '@/components/contacts/filter-toolbar';
 
 export const metadata: Metadata = {
   title: 'Contact List - SleekFlow',

@@ -1,8 +1,10 @@
-import EpisodeList from '@/components/episode-list';
 import { Card, CardBody, Avatar } from '@heroui/react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { fetchCharacterById, fetchEpisodes } from '@/queries/contacts';
+import ContactHeader from '@/components/contact-details/contact-header';
+import PersonalInfo from '@/components/contact-details/personal-info';
+import EpisodeList from '@/components/contact-details/episode-list';
 
 interface PageProps {
   params: {
@@ -38,70 +40,17 @@ export default async function ContactPage({ params }: PageProps) {
   const episodes = await fetchEpisodes(character.episode);
 
   return (
-    <main className="p-8 max-w-5xl mx-auto">
-      {/* Header Section */}
+    <main className="p-8 max-w-5xl mx-auto space-y-6">
       <header>
-        <Card className="mb-8">
-          <CardBody className="flex flex-row items-center gap-6 p-6">
-            <Avatar
-              src={character.image}
-              alt={`${character.name}'s avatar`}
-              className="w-32 h-32"
-            />
-            <div>
-              <h1 className="text-4xl font-bold">{character.name}</h1>
-            </div>
-          </CardBody>
-        </Card>
+        <ContactHeader character={character} />
       </header>
 
-      {/* Personal Info Section */}
       <section aria-labelledby="personal-info-heading">
-        <Card className="mb-8">
-          <CardBody className="p-6">
-            <h2 id="personal-info-heading" className="text-2xl font-bold mb-4">
-              Personal Information
-            </h2>
-            <dl className="grid grid-cols-2 gap-4">
-              <div>
-                <dt className="text-gray-500">Status</dt>
-                <dd className="text-lg font-semibold">{character.status}</dd>
-              </div>
-              <div>
-                <dt className="text-gray-500">Gender</dt>
-                <dd className="text-lg font-semibold">{character.gender}</dd>
-              </div>
-              <div>
-                <dt className="text-gray-500">Species</dt>
-                <dd className="text-lg font-semibold">{character.species}</dd>
-              </div>
-              <div>
-                <dt className="text-gray-500">Location</dt>
-                <dd className="text-lg font-semibold">
-                  {character.location.name}
-                </dd>
-              </div>
-              <div className="col-span-2">
-                <dt className="text-gray-500">Origin</dt>
-                <dd className="text-lg font-semibold">
-                  {character.origin.name}
-                </dd>
-              </div>
-            </dl>
-          </CardBody>
-        </Card>
+        <PersonalInfo character={character} />
       </section>
 
-      {/* Episode Appearance Section */}
       <section aria-labelledby="episodes-heading">
-        <Card>
-          <CardBody className="p-6">
-            <h2 id="episodes-heading" className="text-2xl font-bold mb-4">
-              Episode Appearances
-            </h2>
-            <EpisodeList episodes={episodes} />
-          </CardBody>
-        </Card>
+        <EpisodeList episodes={episodes} />
       </section>
     </main>
   );

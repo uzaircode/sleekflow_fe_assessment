@@ -9,11 +9,11 @@ import {
   TableRow,
   TableCell,
   Pagination,
-  Spinner,
   User,
 } from '@heroui/react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useTransition } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface Character {
   id: number;
@@ -55,10 +55,15 @@ export default function ContactList({
     gender: char.gender,
   }));
 
+  const [isPending, startTransition] = useTransition();
+
   const onPageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', page.toString());
-    router.replace(`${pathname}?${params.toString()}`);
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
   };
 
   return (
@@ -87,11 +92,7 @@ export default function ContactList({
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
 
-      <TableBody
-        emptyContent="No rows to display."
-        items={rows}
-        loadingContent={<Spinner />}
-      >
+      <TableBody emptyContent="No rows to display." items={rows}>
         {(item) => (
           <TableRow key={item.key}>
             {(columnKey) => (
@@ -103,6 +104,11 @@ export default function ContactList({
                       avatarProps={{
                         src: item.image,
                         showFallback: true,
+                        ImgComponent: 'img',
+                        imgProps: {
+                          loading: 'lazy',
+                          referrerPolicy: 'no-referrer',
+                        },
                       }}
                     />
                   ) : (
