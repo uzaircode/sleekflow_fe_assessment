@@ -31,6 +31,10 @@ export default function FilterToolbar() {
       params.delete(filterType);
     }
 
+    // Reset to page 1 on filter change
+    params.delete('page');
+    params.set('page', '1');
+
     startTransition(() => {
       // Stay on current page (either / or /search)
       router.push(`${pathname}?${params.toString()}`);

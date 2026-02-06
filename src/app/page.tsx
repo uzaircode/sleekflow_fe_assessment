@@ -1,6 +1,5 @@
-import SearchInput from '@/components/search-input';
 import { Suspense } from 'react';
-import { Select, SelectItem, Spinner } from '@heroui/react';
+import { Spinner } from '@heroui/react';
 import ContactListWrapper from './contact-list-wrapper';
 import type { Metadata } from 'next';
 import FilterToolbar from '@/components/filter-toolbar';

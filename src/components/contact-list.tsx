@@ -10,12 +10,14 @@ import {
   TableCell,
   Pagination,
   Spinner,
+  User,
 } from '@heroui/react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 interface Character {
   id: number;
+  image: string;
   name: string;
   status: string;
   species: string;
@@ -46,6 +48,7 @@ export default function ContactList({
 
   const rows = characters.map((char) => ({
     key: char.id.toString(),
+    image: char.image,
     name: char.name,
     status: char.status,
     species: char.species,
@@ -55,7 +58,7 @@ export default function ContactList({
   const onPageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', page.toString());
-    router.push(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -90,14 +93,21 @@ export default function ContactList({
         loadingContent={<Spinner />}
       >
         {(item) => (
-          <TableRow key={item.key} className="cursor-pointer">
+          <TableRow key={item.key}>
             {(columnKey) => (
               <TableCell>
-                <Link
-                  href={`/contact/${item.key}`}
-                  className="block w-full h-full"
-                >
-                  {item[columnKey as keyof typeof item]}
+                <Link href={`/contact/${item.key}`} className="block w-full">
+                  {columnKey === 'name' ? (
+                    <User
+                      name={item.name}
+                      avatarProps={{
+                        src: item.image,
+                        showFallback: true,
+                      }}
+                    />
+                  ) : (
+                    item[columnKey as keyof typeof item]
+                  )}
                 </Link>
               </TableCell>
             )}
