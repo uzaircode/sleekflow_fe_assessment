@@ -1,4 +1,3 @@
-import { Card, CardBody, Avatar } from '@heroui/react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { fetchCharacterById, fetchEpisodes } from '@/queries/contacts';
@@ -46,7 +45,7 @@ export default async function ContactPage({ params }: PageProps) {
       </header>
 
       <section aria-labelledby="personal-info-heading">
-        <PersonalInfo character={character} />
+        <PersonalInfo characterId={params.id} />
       </section>
 
       <section aria-labelledby="episodes-heading">
