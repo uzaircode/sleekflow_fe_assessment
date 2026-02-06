@@ -44,7 +44,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="p-4">
       <h1 className="text-xl mb-4">Search Results for "{name}"</h1>
       <FilterToolbar />
-      <ContactList characters={characters} />
     </div>
   );
 }

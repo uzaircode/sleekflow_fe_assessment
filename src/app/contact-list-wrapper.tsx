@@ -1,30 +1,47 @@
 import ContactList from '@/components/contact-list';
 
-interface ContactListWrapperProps {
-  searchParams?: {
-    status?: string;
-    species?: string;
-    gender?: string;
+async function fetchCharactersPage(params: {
+  name?: string;
+  status?: string;
+  species?: string;
+  gender?: string;
+  page?: string;
+}) {
+  const queryParams = new URLSearchParams();
+
+  if (params.name) queryParams.append('name', params.name);
+  if (params.status) queryParams.append('status', params.status);
+  if (params.species) queryParams.append('species', params.species);
+  if (params.gender) queryParams.append('gender', params.gender);
+  if (params.page) queryParams.append('page', params.page);
+
+  const response = await fetch(
+    `https://rickandmortyapi.com/api/character?${queryParams.toString()}`,
+  );
+
+  if (!response.ok) {
+    return { results: [], info: { count: 0, pages: 0 } };
+  }
+
+  const data = await response.json();
+  return {
+    results: data.results || [],
+    info: data.info,
   };
 }
 
 export default async function ContactListWrapper({
   searchParams,
-}: ContactListWrapperProps) {
-  // Build query string from search params
-  const params = new URLSearchParams();
-  if (searchParams?.status) params.append('status', searchParams.status);
-  if (searchParams?.species) params.append('species', searchParams.species);
-  if (searchParams?.gender) params.append('gender', searchParams.gender);
+}: {
+  searchParams?: any;
+}) {
+  const data = await fetchCharactersPage(searchParams || {});
 
-  const queryString = params.toString();
-  const url = `https://rickandmortyapi.com/api/character${
-    queryString ? `?${queryString}` : ''
-  }`;
-
-  const response = await fetch(url);
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
-  const data = await response.json();
-
-  return <ContactList characters={data.results} />;
+  return (
+    <ContactList
+      characters={data.results}
+      totalPages={data.info.pages}
+      currentPage={Number(searchParams?.page) || 1}
+    />
+  );
 }

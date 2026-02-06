@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   Table,
   TableHeader,
@@ -7,7 +8,9 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Pagination,
 } from '@heroui/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface Character {
@@ -20,9 +23,18 @@ interface Character {
 
 interface ContactListProps {
   characters: Character[];
+  totalPages: number;
+  currentPage: number;
 }
 
-export default function ContactList({ characters }: ContactListProps) {
+export default function ContactList({
+  characters,
+  totalPages,
+  currentPage,
+}: ContactListProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'status', label: 'Status' },
@@ -38,8 +50,34 @@ export default function ContactList({ characters }: ContactListProps) {
     gender: char.gender,
   }));
 
+  const onPageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', page.toString());
+    router.push(`/?${params.toString()}`);
+  };
+
   return (
-    <Table isStriped aria-label="Rick and Morty Contact">
+    <Table
+      aria-label="Rick and Morty Contact"
+      bottomContent={
+        totalPages > 1 ? (
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="primary"
+              page={currentPage}
+              total={totalPages}
+              onChange={onPageChange}
+            />
+          </div>
+        ) : null
+      }
+      classNames={{
+        wrapper: 'min-h-[222px]',
+      }}
+    >
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
