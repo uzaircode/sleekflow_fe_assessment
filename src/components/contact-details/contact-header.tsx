@@ -14,6 +14,7 @@ export default function ContentHeader({ character }: ContactHeaderProps) {
         <Avatar
           src={character.image}
           alt={`${character.name}'s avatar`}
+          ignoreFallback={character.image != null}
           className="w-32 h-32"
         />
         <div>

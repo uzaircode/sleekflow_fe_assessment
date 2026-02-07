@@ -35,7 +35,13 @@ export default async function Home({ searchParams }: HomeProps) {
         <FilterToolbar />
       </Suspense>
 
-      <Suspense fallback={<Spinner />}>
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Spinner size="lg" />
+          </div>
+        }
+      >
         <ContactListWrapper searchParams={searchParams} />
       </Suspense>
     </div>

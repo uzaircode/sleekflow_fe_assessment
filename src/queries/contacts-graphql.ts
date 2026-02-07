@@ -1,4 +1,3 @@
-// src/queries/contacts-graphql.ts
 import { graphqlClient } from '@/graphql-client';
 import { gql } from 'graphql-request';
 import { GRAPHQL_ENDPOINT } from '@/constants/api';
@@ -121,9 +120,12 @@ export async function fetchCharactersContactList(params: {
     );
     console.log('🟢 [GraphQL API Call] Full Query:', GET_CHARACTERS_QUERY);
 
+    // Force fresh data for each request to avoid stale cache issues
     const data = await graphqlClient.request<{
       characters: CharactersResponse;
-    }>(GET_CHARACTERS_QUERY, variables);
+    }>(GET_CHARACTERS_QUERY, variables, {
+      cache: 'no-store',
+    });
 
     console.log(
       '📦 [GraphQL Response] Full Data:',
@@ -161,9 +163,11 @@ export async function fetchCharacterById(
     );
     console.log('🟢 [GraphQL API Call] Full Query:', GET_CHARACTER_BY_ID_QUERY);
 
+    // Force fresh data to avoid cache issues
     const data = await graphqlClient.request<{ character: Character }>(
       GET_CHARACTER_BY_ID_QUERY,
       { id },
+      { cache: 'no-store' },
     );
 
     console.log(

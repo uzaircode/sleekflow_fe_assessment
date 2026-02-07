@@ -109,11 +109,10 @@ export default function ContactList({
                       avatarProps={{
                         src: item.image,
                         showFallback: true,
-                        ImgComponent: 'img',
-                        imgProps: {
-                          loading: 'lazy',
-                          referrerPolicy: 'no-referrer',
-                        },
+                      }}
+                      classNames={{
+                        name: 'truncate',
+                        wrapper: 'min-w-0',
                       }}
                     />
                   ) : (

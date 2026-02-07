@@ -1,4 +1,4 @@
-// src/queries/contacts.ts
+import { API_BASE_URL } from '@/constants/api';
 
 export type Character = {
   id: number;
@@ -37,8 +37,6 @@ export type CharactersResponse = {
     prev: string | null;
   };
 };
-
-const API_BASE_URL = 'https://rickandmortyapi.com/api';
 
 export async function fetchCharactersContactList(params: {
   name?: string;
@@ -116,7 +114,6 @@ export async function fetchCharacterById(
       next: { revalidate: 3600, tags: ['characters', `character-${id}`] },
     });
 
-    // Log AFTER fetch to see cache status
     console.log(
       '📊 Cache status:',
       response.headers.get('x-vercel-cache') || 'UNKNOWN',

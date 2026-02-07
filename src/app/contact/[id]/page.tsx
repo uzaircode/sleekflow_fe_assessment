@@ -42,7 +42,7 @@ export default async function ContactPage({ params }: PageProps) {
   }
 
   return (
-    <main className="p-8 max-w-5xl mx-auto space-y-6">
+    <main className="mx-auto space-y-6">
       <header>
         <ContactHeader character={character} />
       </header>

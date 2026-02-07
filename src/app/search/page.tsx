@@ -40,7 +40,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <FilterToolbar />
       </Suspense>
 
-      <Suspense fallback={<Spinner />}>
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Spinner size="lg" />
+          </div>
+        }
+      >
         <ContactList
           characters={data.results}
           totalPages={data.info.pages}
