@@ -120,12 +120,8 @@ export async function fetchCharactersContactList(params: {
     });
 
     return data.characters;
-  } catch (error) {
-    console.error('❌ [GraphQL] Error fetching characters:', error);
-    return {
-      results: [],
-      info: { count: 0, pages: 0, next: null, prev: null },
-    };
+  } catch (_error) {
+    throw new Error('Unable to load characters. Please try again later.');
   }
 }
 
@@ -146,8 +142,7 @@ export async function fetchCharacterById(
     );
 
     return data.character;
-  } catch (error) {
-    console.error('❌ [GraphQL] Error fetching character:', error);
-    return null;
+  } catch (_error) {
+    throw new Error('Unable to load character. Please try again later.');
   }
 }
