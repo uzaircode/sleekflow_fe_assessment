@@ -1,8 +1,9 @@
 import { Suspense } from 'react';
 import { Spinner } from '@heroui/react';
-import ContactListWrapper from './contact-list-wrapper';
 import type { Metadata } from 'next';
 import FilterToolbar from '@/components/contacts/filter-toolbar';
+import ContactList from '@/components/contacts/contact-list';
+import { fetchCharactersContactList } from '@/queries/contacts-graphql';
 
 export const metadata: Metadata = {
   title: 'Contact List - SleekFlow',
@@ -23,6 +24,8 @@ interface HomeProps {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
+  const data = await fetchCharactersContactList(searchParams || {});
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Contact List</h1>
@@ -42,7 +45,11 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         }
       >
-        <ContactListWrapper searchParams={searchParams} />
+        <ContactList
+          characters={data.results}
+          totalPages={data.info.pages}
+          currentPage={Number(searchParams?.page) || 1}
+        />
       </Suspense>
     </div>
   );

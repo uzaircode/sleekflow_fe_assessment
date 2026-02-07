@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import paths from '@/paths';
+import { updateQueryParam } from '@/utils/url';
 
 interface Character {
   id: number;
@@ -59,11 +60,10 @@ export default function ContactList({
   const [isPending, startTransition] = useTransition();
 
   const onPageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
+    const queryString = updateQueryParam(searchParams, 'page', page);
 
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${pathname}?${queryString}`);
     });
   };
 

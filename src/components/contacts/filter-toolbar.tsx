@@ -8,6 +8,7 @@ import {
   SPECIES_OPTIONS,
   GENDER_OPTIONS,
 } from '@/app/constants/filters';
+import { updateQueryParam } from '@/utils/url';
 
 export default function FilterToolbar() {
   const router = useRouter();
@@ -31,8 +32,10 @@ export default function FilterToolbar() {
     // Delete the page as the filter has changed
     params.delete('page');
 
+    const queryString = params.toString();
+
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(`${pathname}?${queryString}`);
     });
   };
 

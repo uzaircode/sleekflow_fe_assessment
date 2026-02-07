@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { buildQueryString } from '@/utils/url';
 
 export async function search(formData: FormData) {
   const name = formData.get('name');
@@ -13,10 +14,12 @@ export async function search(formData: FormData) {
   }
 
   // Build URL with search name and preserve filters
-  const params = new URLSearchParams({ name });
-  if (status && typeof status === 'string') params.append('status', status);
-  if (species && typeof species === 'string') params.append('species', species);
-  if (gender && typeof gender === 'string') params.append('gender', gender);
+  const queryString = buildQueryString({
+    name,
+    status: typeof status === 'string' ? status : undefined,
+    species: typeof species === 'string' ? species : undefined,
+    gender: typeof gender === 'string' ? gender : undefined,
+  });
 
-  redirect(`/search?${params.toString()}`);
+  redirect(`/search?${queryString}`);
 }
