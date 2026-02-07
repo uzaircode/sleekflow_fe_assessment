@@ -28,11 +28,11 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Contact List</h1>
+      <h1 className='text-3xl font-bold mb-8'>Contact List</h1>
 
       <Suspense
         fallback={
-          <div className="h-10 mb-6 animate-pulse bg-gray-100 rounded" />
+          <div className='h-10 mb-6 animate-pulse bg-gray-100 rounded' />
         }
       >
         <FilterToolbar />
@@ -40,8 +40,8 @@ export default async function Home({ searchParams }: HomeProps) {
 
       <Suspense
         fallback={
-          <div className="flex justify-center items-center min-h-[400px]">
-            <Spinner size="lg" />
+          <div className='flex justify-center items-center min-h-[400px]'>
+            <Spinner size='lg' />
           </div>
         }
       >

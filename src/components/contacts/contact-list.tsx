@@ -57,7 +57,7 @@ export default function ContactList({
     gender: char.gender,
   }));
 
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const onPageChange = (page: number) => {
     const queryString = updateQueryParam(searchParams, 'page', page);
@@ -69,16 +69,16 @@ export default function ContactList({
 
   return (
     <Table
-      aria-label="Rick and Morty Contact"
+      aria-label='Rick and Morty Contact'
       isStriped
       bottomContent={
         totalPages > 1 ? (
-          <div className="flex w-full justify-center">
+          <div className='flex w-full justify-center'>
             <Pagination
               isCompact
               showControls
               showShadow
-              color="primary"
+              color='primary'
               page={currentPage}
               total={totalPages}
               onChange={onPageChange}
@@ -94,14 +94,14 @@ export default function ContactList({
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
 
-      <TableBody emptyContent="No rows to display." items={rows}>
+      <TableBody emptyContent='No rows to display.' items={rows}>
         {(item) => (
           <TableRow key={item.key}>
             {(columnKey) => (
               <TableCell>
                 <Link
                   href={paths.contactShow(item.key)}
-                  className="block w-full"
+                  className='block w-full'
                 >
                   {columnKey === 'name' ? (
                     <User

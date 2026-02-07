@@ -1,6 +1,5 @@
 import { graphqlClient } from '@/graphql-client';
 import { gql } from 'graphql-request';
-import { GRAPHQL_ENDPOINT } from '@/constants/api';
 
 export type Character = {
   id: number;
@@ -112,13 +111,6 @@ export async function fetchCharactersContactList(params: {
       species: params.species || null,
       gender: params.gender || null,
     };
-    console.log('🟢 [GraphQL API Call] Endpoint:', GRAPHQL_ENDPOINT);
-    console.log('🟢 [GraphQL API Call] Query: GetCharacters');
-    console.log(
-      '🟢 [GraphQL API Call] Variables:',
-      JSON.stringify(variables, null, 2),
-    );
-    console.log('🟢 [GraphQL API Call] Full Query:', GET_CHARACTERS_QUERY);
 
     // Force fresh data for each request to avoid stale cache issues
     const data = await graphqlClient.request<{
@@ -126,15 +118,6 @@ export async function fetchCharactersContactList(params: {
     }>(GET_CHARACTERS_QUERY, variables, {
       cache: 'no-store',
     });
-
-    console.log(
-      '📦 [GraphQL Response] Full Data:',
-      JSON.stringify(data, null, 2),
-    );
-    console.log(
-      '📦 [GraphQL Response] Results count:',
-      data.characters.results.length,
-    );
 
     return data.characters;
   } catch (error) {
@@ -155,29 +138,11 @@ export async function fetchCharacterById(
   }
 
   try {
-    console.log('🟢 [GraphQL API Call] Endpoint:', GRAPHQL_ENDPOINT);
-    console.log('🟢 [GraphQL API Call] Query: GetCharacterById');
-    console.log(
-      '🟢 [GraphQL API Call] Variables:',
-      JSON.stringify({ id }, null, 2),
-    );
-    console.log('🟢 [GraphQL API Call] Full Query:', GET_CHARACTER_BY_ID_QUERY);
-
     // Force fresh data to avoid cache issues
     const data = await graphqlClient.request<{ character: Character }>(
       GET_CHARACTER_BY_ID_QUERY,
       { id },
       { cache: 'no-store' },
-    );
-
-    console.log(
-      '📦 [GraphQL Response] Full Data:',
-      JSON.stringify(data, null, 2),
-    );
-    console.log('📦 [GraphQL Response] Character name:', data.character.name);
-    console.log(
-      '📦 [GraphQL Response] Episodes count:',
-      data.character.episode.length,
     );
 
     return data.character;

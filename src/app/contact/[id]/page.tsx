@@ -42,16 +42,16 @@ export default async function ContactPage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto space-y-6">
+    <main className='mx-auto space-y-6'>
       <header>
         <ContactHeader character={character} />
       </header>
 
-      <section aria-labelledby="personal-info-heading">
+      <section aria-labelledby='personal-info-heading'>
         <PersonalInfo character={character} />
       </section>
 
-      <section aria-labelledby="episodes-heading">
+      <section aria-labelledby='episodes-heading'>
         <Suspense fallback={<EpisodeListSkeleton />}>
           <EpisodeListAsync episodes={character.episode} />
         </Suspense>

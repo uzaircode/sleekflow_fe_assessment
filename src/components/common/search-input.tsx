@@ -11,10 +11,10 @@ function SearchField() {
 
   return (
     <Input
-      name="name"
-      placeholder="Search by name..."
+      name='name'
+      placeholder='Search by name...'
       defaultValue={searchParams.get('name') || ''}
-      endContent={pending && <Spinner size="sm" color="primary" />}
+      endContent={pending && <Spinner size='sm' color='primary' />}
       isDisabled={pending}
     />
   );
@@ -29,22 +29,22 @@ export default function SearchInput() {
       {/* Hidden fields to preserve current filters */}
       {searchParams.get('status') && (
         <input
-          type="hidden"
-          name="status"
+          type='hidden'
+          name='status'
           value={searchParams.get('status')!}
         />
       )}
       {searchParams.get('species') && (
         <input
-          type="hidden"
-          name="species"
+          type='hidden'
+          name='species'
           value={searchParams.get('species')!}
         />
       )}
       {searchParams.get('gender') && (
         <input
-          type="hidden"
-          name="gender"
+          type='hidden'
+          name='gender'
           value={searchParams.get('gender')!}
         />
       )}

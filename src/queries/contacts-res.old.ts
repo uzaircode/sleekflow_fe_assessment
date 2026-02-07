@@ -53,15 +53,7 @@ export async function fetchCharactersContactList(params: {
   if (params.gender) queryParams.append('gender', params.gender);
   if (params.page) queryParams.append('page', params.page);
 
-  // PROOF: Log every fetch call with timestamp
-  const timestamp = new Date().toISOString();
   const url = `${API_BASE_URL}/character?${queryParams.toString()}`;
-  console.log('🔴 [NO-STORE] Fetching at:', timestamp);
-  console.log('🔴 [NO-STORE] URL:', url);
-  console.log(
-    '🔴 [NO-STORE] Request ID:',
-    Math.random().toString(36).substring(7),
-  );
 
   const response = await fetch(url, { cache: 'no-store' });
 
@@ -73,14 +65,6 @@ export async function fetchCharactersContactList(params: {
   }
 
   const data = await response.json();
-  console.log(
-    '📦 [fetchCharactersContactList] Response JSON:',
-    JSON.stringify(data, null, 2),
-  );
-  console.log(
-    '📦 [fetchCharactersContactList] Results count:',
-    data.results?.length || 0,
-  );
 
   // Client-side exact species filtering
   let results = data.results || [];
@@ -108,28 +92,15 @@ export async function fetchCharacterById(
   try {
     const url = `${API_BASE_URL}/character/${id}`;
 
-    console.log('🟡 Function called for character:', id);
-
     const response = await fetch(url, {
       next: { revalidate: 3600, tags: ['characters', `character-${id}`] },
     });
-
-    console.log(
-      '📊 Cache status:',
-      response.headers.get('x-vercel-cache') || 'UNKNOWN',
-    );
-    console.log('🔍 Response from:', response.url);
 
     if (!response.ok) {
       return null;
     }
 
     const data = await response.json();
-    console.log('✅ Data retrieved for:', data.name);
-    console.log(
-      '📦 [fetchCharacterById] Response JSON:',
-      JSON.stringify(data, null, 2),
-    );
 
     return data;
   } catch (error) {
@@ -141,7 +112,7 @@ export async function fetchCharacterById(
 export async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
   if (!episodeUrls || episodeUrls.length === 0) return [];
 
-  // 1. Extract IDs from URLs (e.g., "https://.../episode/1" -> "1")
+  // Extract IDs from URLs (e.g., "https://.../episode/1" -> "1")
   const episodeIds = episodeUrls.map((url) => url.split('/').pop());
   const idsString = episodeIds.join(',');
 
@@ -155,17 +126,7 @@ export async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
     }
 
     const data = await response.json();
-    console.log(
-      '📦 [fetchEpisodes] Response JSON:',
-      JSON.stringify(data, null, 2),
-    );
-    console.log(
-      '📦 [fetchEpisodes] Episodes count:',
-      Array.isArray(data) ? data.length : 1,
-    );
 
-    // 2. Handle API quirk: If only one ID is requested,
-    // it returns an Object. If multiple, it returns an Array.
     return Array.isArray(data) ? data : [data];
   } catch (error) {
     console.error('Error fetching episodes:', error);

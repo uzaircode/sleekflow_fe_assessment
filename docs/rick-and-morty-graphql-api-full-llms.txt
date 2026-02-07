@@ -1,0 +1,469 @@
+<SYSTEM>This is the developer documentation for Rick and Morty GraphQL API.</SYSTEM>
+
+<!-- Format: markdown, Generated: February 6, 2026 -->
+
+# Rick and Morty GraphQL API
+
+# . Rick and Morty GraphQL API
+
+## 1. Rick and Morty GraphQL API
+
+The Rick and Morty API provides a GraphQL endpoint for querying characters, locations, and episodes from the television show Rick and Morty.
+
+**GraphQL Endpoint:** https://rickandmortyapi.com/graphql
+
+You can use any GraphQL client or make POST requests with a JSON body containing the `query` field.
+
+### 1.1. Queries
+
+The following queries are available:
+
+| Query | Arguments | Returns | Description |
+|---|---|---|---|
+| `character` | `id: ID!` | `Character` | Get a specific character by ID |
+| `characters` | `page: Int, filter: FilterCharacter` | `Characters` | Get the list of all characters (paginated) |
+| `charactersByIds` | `ids: [ID!]!` | `[Character]` | Get a list of characters selected by ids |
+| `location` | `id: ID!` | `Location` | Get a specific location by ID |
+| `locations` | `page: Int, filter: FilterLocation` | `Locations` | Get the list of all locations (paginated) |
+| `locationsByIds` | `ids: [ID!]!` | `[Location]` | Get a list of locations selected by ids |
+| `episode` | `id: ID!` | `Episode` | Get a specific episode by ID |
+| `episodes` | `page: Int, filter: FilterEpisode` | `Episodes` | Get the list of all episodes (paginated) |
+| `episodesByIds` | `ids: [ID!]!` | `[Episode]` | Get a list of episodes selected by ids |
+
+
+
+### 1.2. Types
+
+#### 1.2.1. Character
+
+| Field | Type | Description |
+|---|---|---|
+| id | ID | The id of the character. |
+| name | String | The name of the character. |
+| status | String | The status of the character ('Alive', 'Dead' or 'unknown'). |
+| species | String | The species of the character. |
+| type | String | The type or subspecies of the character. |
+| gender | String | The gender of the character ('Female', 'Male', 'Genderless' or 'unknown'). |
+| origin | Location | The character's origin location. |
+| location | Location | The character's last known location. |
+| image | String | Link to the character's image. All images are 300x300px and most are medium shots or portraits since they are intended to be used as avatars. |
+| episode | [Episode]! | Episodes in which this character appeared. |
+| created | String | Time at which the character was created in the database. |
+
+
+
+#### 1.2.2. Location
+
+| Field | Type | Description |
+|---|---|---|
+| id | ID | The id of the location. |
+| name | String | The name of the location. |
+| type | String | The type of the location. |
+| dimension | String | The dimension in which the location is located. |
+| residents | [Character]! | List of characters who have been last seen in the location. |
+| created | String | Time at which the location was created in the database. |
+
+
+
+#### 1.2.3. Episode
+
+| Field | Type | Description |
+|---|---|---|
+| id | ID | The id of the episode. |
+| name | String | The name of the episode. |
+| air_date | String | The air date of the episode. |
+| episode | String | The code of the episode. |
+| characters | [Character]! | List of characters who have been seen in the episode. |
+| created | String | Time at which the episode was created in the database. |
+
+
+
+#### 1.2.4. Info (Pagination)
+
+| Field | Type | Description |
+|---|---|---|
+| count | Int | The length of the response. |
+| pages | Int | The amount of pages. |
+| next | Int | Number of the next page (if it exists). |
+| prev | Int | Number of the previous page (if it exists). |
+
+
+
+#### 1.2.5. Characters (paginated response)
+
+| Field | Type |
+|---|---|
+| info | Info |
+| results | [Character] |
+
+
+
+#### 1.2.6. Locations (paginated response)
+
+| Field | Type |
+|---|---|
+| info | Info |
+| results | [Location] |
+
+
+
+#### 1.2.7. Episodes (paginated response)
+
+| Field | Type |
+|---|---|
+| info | Info |
+| results | [Episode] |
+
+
+
+### 1.3. Filter Input Types
+
+#### 1.3.1. FilterCharacter
+
+| Field | Type | Description |
+|---|---|---|
+| name | String | Filter by character name |
+| status | String | Filter by status: `Alive`, `Dead`, or `unknown` |
+| species | String | Filter by species |
+| type | String | Filter by type or subspecies |
+| gender | String | Filter by gender: `Female`, `Male`, `Genderless`, or `unknown` |
+
+
+
+#### 1.3.2. FilterLocation
+
+| Field | Type | Description |
+|---|---|---|
+| name | String | Filter by location name |
+| type | String | Filter by location type |
+| dimension | String | Filter by dimension |
+
+
+
+#### 1.3.3. FilterEpisode
+
+| Field | Type | Description |
+|---|---|---|
+| name | String | Filter by episode name |
+| episode | String | Filter by episode code (e.g. `S01E01`) |
+
+
+
+### 1.4. Full Schema Definition
+
+```graphql
+type Query {
+  """Get a specific character by ID"""
+  character(id: ID!): Character
+
+  """Get the list of all characters"""
+  characters(page: Int, filter: FilterCharacter): Characters
+
+  """Get a list of characters selected by ids"""
+  charactersByIds(ids: [ID!]!): [Character]
+
+  """Get a specific location by ID"""
+  location(id: ID!): Location
+
+  """Get the list of all locations"""
+  locations(page: Int, filter: FilterLocation): Locations
+
+  """Get a list of locations selected by ids"""
+  locationsByIds(ids: [ID!]!): [Location]
+
+  """Get a specific episode by ID"""
+  episode(id: ID!): Episode
+
+  """Get the list of all episodes"""
+  episodes(page: Int, filter: FilterEpisode): Episodes
+
+  """Get a list of episodes selected by ids"""
+  episodesByIds(ids: [ID!]!): [Episode]
+}
+
+type Characters {
+  info: Info
+  results: [Character]
+}
+
+type Locations {
+  info: Info
+  results: [Location]
+}
+
+type Episodes {
+  info: Info
+  results: [Episode]
+}
+
+type Character {
+  """The id of the character."""
+  id: ID
+  """The name of the character."""
+  name: String
+  """The status of the character ('Alive', 'Dead' or 'unknown')."""
+  status: String
+  """The species of the character."""
+  species: String
+  """The type or subspecies of the character."""
+  type: String
+  """The gender of the character ('Female', 'Male', 'Genderless' or 'unknown')."""
+  gender: String
+  """The character's origin location"""
+  origin: Location
+  """The character's last known location"""
+  location: Location
+  """Link to the character's image. All images are 300x300px."""
+  image: String
+  """Episodes in which this character appeared."""
+  episode: [Episode]!
+  """Time at which the character was created in the database."""
+  created: String
+}
+
+type Location {
+  """The id of the location."""
+  id: ID
+  """The name of the location."""
+  name: String
+  """The type of the location."""
+  type: String
+  """The dimension in which the location is located."""
+  dimension: String
+  """List of characters who have been last seen in the location."""
+  residents: [Character]!
+  """Time at which the location was created in the database."""
+  created: String
+}
+
+type Episode {
+  """The id of the episode."""
+  id: ID
+  """The name of the episode."""
+  name: String
+  """The air date of the episode."""
+  air_date: String
+  """The code of the episode."""
+  episode: String
+  """List of characters who have been seen in the episode."""
+  characters: [Character]!
+  """Time at which the episode was created in the database."""
+  created: String
+}
+
+type Info {
+  """The length of the response."""
+  count: Int
+  """The amount of pages."""
+  pages: Int
+  """Number of the next page (if it exists)"""
+  next: Int
+  """Number of the previous page (if it exists)"""
+  prev: Int
+}
+
+input FilterCharacter {
+  name: String
+  status: String
+  species: String
+  type: String
+  gender: String
+}
+
+input FilterLocation {
+  name: String
+  type: String
+  dimension: String
+}
+
+input FilterEpisode {
+  name: String
+  episode: String
+}
+```
+
+### 1.5. Query Examples
+
+#### 1.5.1. Get all characters with pagination and filtering
+
+```graphql
+query {
+  characters(page: 2, filter: { name: "rick" }) {
+    info {
+      count
+      pages
+      next
+      prev
+    }
+    results {
+      id
+      name
+      status
+      species
+      gender
+      image
+    }
+  }
+}
+```
+
+#### 1.5.2. Get a single character with full details
+
+```graphql
+query {
+  character(id: 1) {
+    id
+    name
+    status
+    species
+    type
+    gender
+    origin {
+      id
+      name
+      type
+      dimension
+    }
+    location {
+      id
+      name
+      type
+      dimension
+    }
+    image
+    episode {
+      id
+      name
+      episode
+    }
+    created
+  }
+}
+```
+
+#### 1.5.3. Get multiple characters by IDs
+
+```graphql
+query {
+  charactersByIds(ids: [1, 2, 3]) {
+    id
+    name
+    status
+    species
+  }
+}
+```
+
+#### 1.5.4. Get locations with filtering
+
+```graphql
+query {
+  locations(page: 1, filter: { dimension: "Dimension C-137" }) {
+    info {
+      count
+      pages
+    }
+    results {
+      id
+      name
+      type
+      dimension
+      residents {
+        id
+        name
+      }
+    }
+  }
+}
+```
+
+#### 1.5.5. Get a single location
+
+```graphql
+query {
+  location(id: 1) {
+    id
+    name
+    type
+    dimension
+    residents {
+      id
+      name
+    }
+    created
+  }
+}
+```
+
+#### 1.5.6. Get episodes with filtering
+
+```graphql
+query {
+  episodes(filter: { episode: "S01" }) {
+    info {
+      count
+    }
+    results {
+      id
+      name
+      air_date
+      episode
+      characters {
+        id
+        name
+      }
+    }
+  }
+}
+```
+
+#### 1.5.7. Get a single episode
+
+```graphql
+query {
+  episode(id: 1) {
+    id
+    name
+    air_date
+    episode
+    characters {
+      id
+      name
+    }
+    created
+  }
+}
+```
+
+#### 1.5.8. Get multiple episodes by IDs
+
+```graphql
+query {
+  episodesByIds(ids: [1, 2]) {
+    id
+    name
+    air_date
+    episode
+  }
+}
+```
+
+#### 1.5.9. Combine multiple queries in a single request
+
+```graphql
+query {
+  characters(filter: { name: "rick" }) {
+    results {
+      name
+    }
+  }
+  location(id: 1) {
+    name
+    dimension
+  }
+  episodesByIds(ids: [1, 2]) {
+    name
+    episode
+  }
+}
+```
