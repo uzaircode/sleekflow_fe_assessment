@@ -1,20 +1,14 @@
-import { Card, CardBody, Skeleton } from '@heroui/react';
-import { fetchCharacterById } from '@/queries/contacts';
+import { Card, CardBody } from '@heroui/react';
 import { Suspense } from 'react';
 import PersonalInfoDataSkeleton from './personal-info-skeleton';
+import type { Character } from '@/queries/contacts';
 
 interface PersonalInfoProps {
-  characterId: string;
+  character: Character;
 }
 
-async function PersonalInfoData({ characterId }: PersonalInfoProps) {
+async function PersonalInfoData({ character }: PersonalInfoProps) {
   await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  const character = await fetchCharacterById(characterId);
-
-  if (!character) {
-    return null;
-  }
 
   return (
     <>
@@ -42,7 +36,7 @@ async function PersonalInfoData({ characterId }: PersonalInfoProps) {
   );
 }
 
-export default function PersonalInfo({ characterId }: PersonalInfoProps) {
+export default function PersonalInfo({ character }: PersonalInfoProps) {
   return (
     <Card className="mb-8">
       <CardBody className="p-6">
@@ -51,7 +45,7 @@ export default function PersonalInfo({ characterId }: PersonalInfoProps) {
         </h2>
         <dl className="grid grid-cols-2 gap-4">
           <Suspense fallback={<PersonalInfoDataSkeleton />}>
-            <PersonalInfoData characterId={characterId} />
+            <PersonalInfoData character={character} />
           </Suspense>
         </dl>
       </CardBody>

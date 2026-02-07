@@ -141,6 +141,9 @@ export async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
       next: { revalidate: 3600, tags: ['episodes'] }, // Cache for 1 hour
     });
 
+    // delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     if (!response.ok) {
       throw new Error('Failed to fetch episodes');
     }

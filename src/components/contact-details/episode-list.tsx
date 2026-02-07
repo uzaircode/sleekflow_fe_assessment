@@ -1,14 +1,4 @@
-'use client';
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Card,
-  CardBody,
-} from '@heroui/react';
+import { Card, CardBody } from '@heroui/react';
 
 interface Episode {
   id: number;
@@ -22,41 +12,49 @@ interface EpisodeTableProps {
 }
 
 export default function EpisodeList({ episodes }: EpisodeTableProps) {
-  const episodeColumns = [
-    { key: 'name', label: 'Episode Name' },
-    { key: 'air_date', label: 'Air Date' },
-    { key: 'episode', label: 'Episode Code' },
-  ];
-
-  const episodeRows = episodes.map((ep) => ({
-    key: ep.id.toString(),
-    name: ep.name,
-    air_date: ep.air_date,
-    episode: ep.episode,
-  }));
-
   return (
     <Card>
       <CardBody className="p-6">
         <h2 id="episodes-heading" className="text-2xl font-bold mb-4">
           Episode Appearances
         </h2>
-        <Table aria-label="Episode appearances" isStriped>
-          <TableHeader columns={episodeColumns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={episodeRows} emptyContent="No episodes found.">
-            {(item) => (
-              <TableRow key={item.key}>
-                {(columnKey) => (
-                  <TableCell>{item[columnKey as keyof typeof item]}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        {episodes.length === 0 ? (
+          <p className="text-default-400 text-center py-8">
+            No episodes found.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full" aria-label="Episode appearances">
+              <thead>
+                <tr className="border-b-2 border-divider">
+                  <th className="text-start py-3 px-3 text-sm font-semibold">
+                    Episode Name
+                  </th>
+                  <th className="text-start py-3 px-3 text-sm font-semibold">
+                    Air Date
+                  </th>
+                  <th className="text-start py-3 px-3 text-sm font-semibold">
+                    Episode Code
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {episodes.map((episode, index) => (
+                  <tr
+                    key={episode.id}
+                    className={`border-b border-divider ${
+                      index % 2 === 0 ? 'bg-default-100' : ''
+                    }`}
+                  >
+                    <td className="py-3 px-3 text-sm">{episode.name}</td>
+                    <td className="py-3 px-3 text-sm">{episode.air_date}</td>
+                    <td className="py-3 px-3 text-sm">{episode.episode}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardBody>
     </Card>
   );

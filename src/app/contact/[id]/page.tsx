@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { fetchCharacterById, fetchEpisodes } from '@/queries/contacts';
 import ContactHeader from '@/components/contact-details/contact-header';
 import PersonalInfo from '@/components/contact-details/personal-info';
 import EpisodeList from '@/components/contact-details/episode-list';
+import EpisodeListSkeleton from '@/components/contact-details/episode-list-skeleton';
 
 interface PageProps {
   params: {
@@ -36,8 +38,6 @@ export default async function ContactPage({ params }: PageProps) {
     notFound();
   }
 
-  const episodes = await fetchEpisodes(character.episode);
-
   return (
     <main className="p-8 max-w-5xl mx-auto space-y-6">
       <header>
@@ -45,12 +45,22 @@ export default async function ContactPage({ params }: PageProps) {
       </header>
 
       <section aria-labelledby="personal-info-heading">
-        <PersonalInfo characterId={params.id} />
+        <PersonalInfo character={character} />
       </section>
 
       <section aria-labelledby="episodes-heading">
-        <EpisodeList episodes={episodes} />
+        <Suspense fallback={<EpisodeListSkeleton />}>
+          <EpisodeListAsync episodes={character.episode} />
+        </Suspense>
       </section>
     </main>
   );
+}
+async function EpisodeListAsync({
+  episodes: episodeUrls,
+}: {
+  episodes: string[];
+}) {
+  const episodes = await fetchEpisodes(episodeUrls);
+  return <EpisodeList episodes={episodes} />;
 }
