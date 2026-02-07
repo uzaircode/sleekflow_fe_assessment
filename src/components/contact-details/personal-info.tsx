@@ -1,15 +1,13 @@
 import { Card, CardBody } from '@heroui/react';
 import { Suspense } from 'react';
 import PersonalInfoDataSkeleton from './personal-info-skeleton';
-import type { Character } from '@/queries/contacts';
+import type { Character } from '@/queries/contacts-graphql';
 
 interface PersonalInfoProps {
   character: Character;
 }
 
 async function PersonalInfoData({ character }: PersonalInfoProps) {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   return (
     <>
       <div>

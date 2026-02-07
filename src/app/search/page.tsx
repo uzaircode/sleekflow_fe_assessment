@@ -4,7 +4,9 @@ import FilterToolbar from '@/components/contacts/filter-toolbar';
 import { Suspense } from 'react';
 import { Spinner } from '@heroui/react';
 import paths from '@/paths';
-import { fetchCharactersContactList } from '@/queries/contacts';
+import { fetchCharactersContactList } from '@/queries/contacts-graphql';
+
+export const dynamic = 'force-dynamic';
 
 interface SearchPageProps {
   searchParams: Promise<{

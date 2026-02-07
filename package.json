@@ -11,6 +11,8 @@
   "dependencies": {
     "@heroui/react": "^2.8.8",
     "framer-motion": "^12.31.2",
+    "graphql": "^16.12.0",
+    "graphql-request": "^7.4.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18"

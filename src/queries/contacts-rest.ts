@@ -75,6 +75,14 @@ export async function fetchCharactersContactList(params: {
   }
 
   const data = await response.json();
+  console.log(
+    '📦 [fetchCharactersContactList] Response JSON:',
+    JSON.stringify(data, null, 2),
+  );
+  console.log(
+    '📦 [fetchCharactersContactList] Results count:',
+    data.results?.length || 0,
+  );
 
   // Client-side exact species filtering
   let results = data.results || [];
@@ -121,6 +129,10 @@ export async function fetchCharacterById(
 
     const data = await response.json();
     console.log('✅ Data retrieved for:', data.name);
+    console.log(
+      '📦 [fetchCharacterById] Response JSON:',
+      JSON.stringify(data, null, 2),
+    );
 
     return data;
   } catch (error) {
@@ -141,14 +153,19 @@ export async function fetchEpisodes(episodeUrls: string[]): Promise<Episode[]> {
       next: { revalidate: 3600, tags: ['episodes'] }, // Cache for 1 hour
     });
 
-    // delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     if (!response.ok) {
       throw new Error('Failed to fetch episodes');
     }
 
     const data = await response.json();
+    console.log(
+      '📦 [fetchEpisodes] Response JSON:',
+      JSON.stringify(data, null, 2),
+    );
+    console.log(
+      '📦 [fetchEpisodes] Episodes count:',
+      Array.isArray(data) ? data.length : 1,
+    );
 
     // 2. Handle API quirk: If only one ID is requested,
     // it returns an Object. If multiple, it returns an Array.

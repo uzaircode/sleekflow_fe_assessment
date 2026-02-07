@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: 'View our list of contacts with their related information.',
 };
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 interface HomeProps {
   searchParams?: {
     name?: string;

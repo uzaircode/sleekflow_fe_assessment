@@ -3,6 +3,11 @@
 import { Select, SelectItem } from '@heroui/react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useTransition } from 'react';
+import {
+  STATUS_OPTIONS,
+  SPECIES_OPTIONS,
+  GENDER_OPTIONS,
+} from '@/app/constants/filters';
 
 export default function FilterToolbar() {
   const router = useRouter();
@@ -10,17 +15,9 @@ export default function FilterToolbar() {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const statusOptions = ['Alive', 'Dead', 'unknown'];
-  const speciesOptions = [
-    'Human',
-    'Alien',
-    'Humanoid',
-    'Poopybutthole',
-    'Mythological',
-    'Animal',
-    'Robot',
-  ];
-  const genderOptions = ['Male', 'Female', 'Genderless', 'unknown'];
+  const statusOptions = STATUS_OPTIONS;
+  const speciesOptions = SPECIES_OPTIONS;
+  const genderOptions = GENDER_OPTIONS;
 
   const handleFilterChange = (filterType: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -31,12 +28,10 @@ export default function FilterToolbar() {
       params.delete(filterType);
     }
 
-    // Reset to page 1 on filter change
+    // Delete the page as the filter has changed
     params.delete('page');
-    params.set('page', '1');
 
     startTransition(() => {
-      // Stay on current page (either / or /search)
       router.push(`${pathname}?${params.toString()}`);
     });
   };

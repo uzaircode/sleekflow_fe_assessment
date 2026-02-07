@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { fetchCharacterById, fetchEpisodes } from '@/queries/contacts';
+import { fetchCharacterById } from '@/queries/contacts-graphql';
 import ContactHeader from '@/components/contact-details/contact-header';
 import PersonalInfo from '@/components/contact-details/personal-info';
 import EpisodeList from '@/components/contact-details/episode-list';
 import EpisodeListSkeleton from '@/components/contact-details/episode-list-skeleton';
+import { REVALIDATE_TIME } from '@/constants/api';
+
+export const revalidate = REVALIDATE_TIME;
 
 interface PageProps {
   params: {
@@ -56,11 +59,16 @@ export default async function ContactPage({ params }: PageProps) {
     </main>
   );
 }
+
 async function EpisodeListAsync({
-  episodes: episodeUrls,
+  episodes,
 }: {
-  episodes: string[];
+  episodes: Array<{
+    id: string;
+    name: string;
+    air_date: string;
+    episode: string;
+  }>;
 }) {
-  const episodes = await fetchEpisodes(episodeUrls);
   return <EpisodeList episodes={episodes} />;
 }

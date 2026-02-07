@@ -1,7 +1,7 @@
 import { Card, CardBody } from '@heroui/react';
 
 interface Episode {
-  id: number;
+  id: string | number;
   name: string;
   air_date: string;
   episode: string;

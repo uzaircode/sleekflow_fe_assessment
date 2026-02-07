@@ -1,5 +1,5 @@
 import ContactList from '@/components/contacts/contact-list';
-import { fetchCharactersContactList } from '@/queries/contacts';
+import { fetchCharactersContactList } from '@/queries/contacts-graphql';
 
 export default async function ContactListWrapper({
   searchParams,
