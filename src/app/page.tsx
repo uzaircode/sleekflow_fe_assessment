@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Spinner, Alert } from '@heroui/react';
+import { Spinner } from '@heroui/react';
 import type { Metadata } from 'next';
 import FilterToolbar from '@/components/contacts/filter-toolbar';
 import ContactList from '@/components/contacts/contact-list';
@@ -37,11 +37,6 @@ export default async function Home({ searchParams }: HomeProps) {
       >
         <FilterToolbar />
       </Suspense>
-
-      <Alert color="warning" variant="flat" className="mb-6">
-        If contact images do not appear, this may be due to API rate limiting.
-        Please refresh the page or try again later.
-      </Alert>
 
       <Suspense
         fallback={

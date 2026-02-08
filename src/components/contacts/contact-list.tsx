@@ -9,13 +9,13 @@ import {
   TableRow,
   TableCell,
   Pagination,
-  User,
 } from '@heroui/react';
 import Link from 'next/link';
 import { useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import paths from '@/paths';
 import { updateQueryParam } from '@/utils/url';
+import RetryableAvatar from '@/components/common/retryable-avatar';
 
 interface Character {
   id: number;
@@ -104,12 +104,10 @@ export default function ContactList({
                   className="block w-full"
                 >
                   {columnKey === 'name' ? (
-                    <User
+                    <RetryableAvatar
+                      src={item.image}
                       name={item.name}
-                      avatarProps={{
-                        src: item.image,
-                        showFallback: true,
-                      }}
+                      maxRetries={3}
                       classNames={{
                         name: 'truncate',
                         wrapper: 'min-w-0',
