@@ -541,7 +541,7 @@ const GET_CHARACTERS_QUERY = gql`
 
 **Result:** Significantly faster page loads, reduced bandwidth consumption, and better user experience on mobile networks. I kept the old REST implementation in the codebase as a reference point and documented the entire migration process.
 
-**Reference:** See [`graphql-migration.md`](docs/graphql-migration.md) for detailed migration documentation.
+**Reference:** See [`graphql-migration.md`](docs/graphql-migration.md) for detailed migration documentation & how I utilised MCP for migration [Model Context Protocol (MCP)](#model-context-protocol-mcp)
 
 ---
 
