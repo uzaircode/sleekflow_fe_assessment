@@ -37,6 +37,7 @@ Covering a comprehensive testing suite with **44+** test cases across 5 browsers
 - [Project Structure](#project-structure)
 - [Testing](#testing)
 - [SEO Optimization](#seo-optimization)
+- [Trade-off Analysis](#trade-off-analysis)
 - [AI Usage & My Contributions](#ai-usage--my-contributions)
   - [Parts I Personally Designed & Wrote](#parts-i-personally-designed--wrote)
   - [Parts Heavily AI-Generated & Edited](#which-parts-were-heavily-ai-generated-and-then-edited-by-me)
@@ -434,6 +435,117 @@ Clean, descriptive URLs that are easy for both users and search engines:
 Good: /contact/1
 Bad:  /c?id=1&type=character
 ```
+
+---
+
+## Trade-off Analysis
+
+Throughout this project, I made several architectural decisions that involved careful trade-off analysis. Here are the key considerations:
+
+### 1. Contact List with Images
+
+**Decision:** Display character images in the contact list table
+
+**Trade-off Considerations:**
+
+Displaying character images in the contact list creates a significantly better user experience by allowing users to visually identify contacts at a glance, which matches professional CRM patterns found in real-world applications. However, this decision comes with notable technical challenges. The primary issue is API rate limiting from the Rick and Morty API, which can cause requests to fail when loading multiple images simultaneously. Additionally, loading images for each contact increases the initial page load time and consumes more bandwidth, which could be problematic for users on slower connections or mobile devices. Despite these challenges, I chose to include images because the visual identification benefit is crucial for a modern CRM interface, and the technical problems could be solved with proper error handling and retry mechanisms.
+
+**The Problem I Encountered:**
+
+![API Rate Limit Error](docs/screenshots/rate-limit-error.png)
+
+_API rate limit error when loading contact list with images_
+
+**My Solution:**
+
+I implemented a **retry mechanism with exponential backoff** to handle API rate limits gracefully:
+
+```typescript
+// Retry logic for rate-limited requests
+const fetchWithRetry = async (url: string, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url);
+      if (response.status === 429) {
+        // Rate limited - wait and retry
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, i) * 1000),
+        );
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (i === retries - 1) throw error;
+    }
+  }
+};
+```
+
+**Video demonstration:** [`docs/screenshots/rate-limit-fix.mp4`](docs/screenshots/rate-limit-fix.mp4)
+
+_Showing the retry mechanism handling rate limits automatically_
+
+**Result:** Users experience seamless image loading even during high traffic, with automatic recovery from rate limit errors.
+
+---
+
+### 2. GraphQL vs REST
+
+**Decision:** Migrate from REST to GraphQL mid-development
+
+**Trade-off Considerations:**
+
+The REST API returns all available fields for each character, which means significant over-fetching since the contact list only needs a subset of that data. The GraphQL approach allows me to request exactly the fields needed, resulting in substantially smaller payloads and faster page loads. However, migrating to GraphQL mid-development introduced several challenges. The REST implementation was already complete and working, so switching meant additional development time to learn the GraphQL client library, rewrite queries, and thoroughly test the new implementation. There was also the risk of introducing bugs during the migration. The learning curve for GraphQL was steeper than continuing with the familiar REST pattern, and I had to understand concepts like query composition, fragment usage, and proper error handling for GraphQL-specific issues. Despite these costs, I decided to proceed with GraphQL because the performance benefits were too significant to ignore. In a real-world CRM scenario where you might be loading hundreds or thousands of contacts, the payload reduction compounds dramatically. The smaller payloads mean faster load times, reduced bandwidth costs, and a better user experience especially on mobile networks. Additionally, GraphQL provides built-in type safety through its schema, which reduces the chance of runtime errors compared to manually typing REST responses. I kept the old REST implementation in the codebase as a reference point and documented the entire migration process to demonstrate my problem-solving approach.
+
+**Reference:** See [`graphql-migration.md`](docs/graphql-migration.md) for detailed migration documentation.
+
+---
+
+### 3. API Call Overhead
+
+**Decision:** Implement aggressive caching vs real-time data
+
+**Trade-off Considerations:**
+
+I had to balance between data freshness and API efficiency. Making a fresh API call on every page load would ensure users always see the latest data, but this approach quickly leads to API rate limiting issues, especially when multiple users access the application simultaneously or when a single user navigates between pages frequently. The constant API calls also result in slower page loads because the application must wait for the network request to complete before rendering content. On the opposite end of the spectrum, implementing infinite caching would provide the fastest possible page loads and eliminate all API overhead, but users would never see updated data without manually clearing their cache, which creates a poor user experience. I chose a middle ground by implementing a one-hour revalidation strategy, where Next.js caches the API responses and serves them from cache for subsequent requests within the time window. This approach dramatically reduces the number of API calls while still ensuring data stays reasonably fresh. For this particular application, character data from the Rick and Morty API is essentially static since the show's episodes are already released, making hourly updates more than sufficient. The caching strategy prevents rate limiting issues entirely under normal usage patterns, provides near-instant page loads for cached content, and maintains good data freshness for a use case where real-time updates aren't critical.
+
+```typescript
+export const revalidate = 3600; // 1 hour cache
+```
+
+---
+
+### 4. URL Params vs Client State for Filters
+
+**Decision:** Use URL query parameters instead of React state (useState)
+
+**Trade-off Considerations:**
+
+Using React's useState for filter management would have been significantly simpler to implement, requiring just a few lines of code to track filter values and update the UI accordingly. However, this approach has fundamental limitations that impact user experience. When filters are stored only in component state, users cannot share specific filtered views with others, the browser's back button doesn't work intuitively because it doesn't preserve filter selections, and refreshing the page resets all filters to their defaults. Additionally, client-side state is invisible to search engines, meaning each filter combination cannot be indexed separately, and there's no way for users to bookmark or deep-link to specific filtered states. In contrast, storing filter state in URL query parameters makes the implementation more complex because I need to handle URL parsing, parameter serialization, and proper routing updates. Despite this added complexity, URL parameters provide crucial benefits that align with professional web application patterns. Users can share exact filtered views by simply copying the URL, the browser's back and forward buttons work naturally by preserving the full application state including filters, and refreshing the page maintains the user's current filter selections. Each unique filter combination becomes a distinct URL that search engines can index, improving SEO. The application state is transparent and visible in the address bar, which significantly aids debugging and allows users to understand exactly what filters are applied. This approach also enables deep linking, where users can jump directly to specific filtered views from external sources like emails or documentation.
+
+**Example URLs:**
+
+```
+/?status=alive&species=human&page=2
+/?name=rick&gender=male
+/search?name=morty
+```
+
+**Implementation:**
+
+```typescript
+// URL state management
+const searchParams = useSearchParams();
+const router = useRouter();
+
+const updateFilter = (key: string, value: string) => {
+  const params = new URLSearchParams(searchParams);
+  params.set(key, value);
+  router.push(`/?${params.toString()}`);
+};
+```
+
+While this required more upfront development effort, the resulting user experience is substantially better and matches the patterns users expect from professional CRM applications.
 
 ---
 
