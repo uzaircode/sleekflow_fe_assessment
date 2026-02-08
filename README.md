@@ -693,7 +693,7 @@ During development, I leveraged the **Model Context Protocol (MCP)** to enhance 
 
 #### What I Did
 
-I created a custom MCP connection to feed AI assistants with comprehensive API documentation from [`docs/rick-and-morty-graphql-api-full-llms.txt`](docs/rick-and-morty-graphql-api-full-llms.txt). This allowed the AI to:
+I created a custom MCP connection to feed AI assistants with comprehensive API documentation from `docs/rick-and-morty-graphql-api-full-llms.txt`, provided by the official [Rick and Morty API's Open-source library](https://github.com/afuh/rick-and-morty-api/blob/master/graphql/typeDefs.js). This allowed the AI to:
 
 - Understand the complete GraphQL schema (Character, Episode, Location types)
 - Suggest accurate field selections based on actual available fields
