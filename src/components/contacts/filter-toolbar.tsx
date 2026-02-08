@@ -39,11 +39,11 @@ export default function FilterToolbar() {
   };
 
   return (
-    <div className='flex gap-4 mb-6 flex-wrap'>
+    <div className="flex gap-4 mb-6 flex-wrap">
       <Select
-        placeholder='Filter by Status'
-        aria-label='Filter by Status'
-        className='max-w-xs'
+        placeholder="Filter by Status"
+        aria-label="Filter by Status"
+        className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
           searchParams.get('status') ? [searchParams.get('status')!] : []
@@ -59,9 +59,9 @@ export default function FilterToolbar() {
       </Select>
 
       <Select
-        placeholder='Filter by Species'
-        aria-label='Filter by Species'
-        className='max-w-xs'
+        placeholder="Filter by Species"
+        aria-label="Filter by Species"
+        className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
           searchParams.get('species') ? [searchParams.get('species')!] : []
@@ -77,9 +77,9 @@ export default function FilterToolbar() {
       </Select>
 
       <Select
-        placeholder='Filter by Gender'
-        aria-label='Filter by Gender'
-        className='max-w-xs'
+        placeholder="Filter by Gender"
+        aria-label="Filter by Gender"
+        className="max-w-xs"
         isDisabled={isPending}
         selectedKeys={
           searchParams.get('gender') ? [searchParams.get('gender')!] : []

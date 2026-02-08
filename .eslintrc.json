@@ -1,5 +1,5 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
   "rules": {
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "@typescript-eslint/no-unused-vars": [
@@ -16,7 +16,6 @@
       "single",
       { "avoidEscape": true, "allowTemplateLiterals": true }
     ],
-    "jsx-quotes": ["error", "prefer-single"],
     "react/no-unescaped-entities": "off"
   }
 }

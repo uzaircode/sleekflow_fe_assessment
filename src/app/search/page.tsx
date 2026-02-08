@@ -30,13 +30,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div>
-      <h1 className='text-3xl font-bold mb-8'>
+      <h1 className="text-3xl font-bold mb-8">
         Search Results for &quot;{name}&quot;
       </h1>
 
       <Suspense
         fallback={
-          <div className='h-10 mb-6 animate-pulse bg-gray-100 rounded' />
+          <div className="h-10 mb-6 animate-pulse bg-gray-100 rounded" />
         }
       >
         <FilterToolbar />
@@ -44,8 +44,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <Suspense
         fallback={
-          <div className='flex justify-center items-center min-h-[400px]'>
-            <Spinner size='lg' />
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Spinner size="lg" />
           </div>
         }
       >

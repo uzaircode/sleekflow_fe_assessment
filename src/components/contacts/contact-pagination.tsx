@@ -27,7 +27,7 @@ export default function ContactPagination({
       isCompact
       showControls
       showShadow
-      color='primary'
+      color="primary"
       page={currentPage}
       total={totalPages}
       onChange={onPageChange}
