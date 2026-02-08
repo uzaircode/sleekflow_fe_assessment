@@ -1,199 +1,629 @@
-- note to the reviewer that this README.md was intended for technical and non technical reader.
+# Rick and Morty Contact List
 
-# SleekFlow Frontend Assessment
+https://sleekflow-fe-assessment.vercel.app/
 
-Rick and Morty Contact Management Application built with Next.js 14, TypeScript, GraphQL, and HeroUI.
+A contact management application that displays characters from the Rick and Morty universe. Built as a CRM-style interface where users can browse, search, and filter characters, then view detailed information about each one including their episode appearances.
 
-## ✅ **Requirements Met**
+---
 
-### **Core Requirements:**
+## Screenshots
 
-- ✅ Contact List Page with pagination
-- ✅ Contact Details Page (dynamic routing)
-- ✅ Search functionality by name
-- ✅ Filtering (Status, Species, Gender)
-- ✅ Server-side rendering (SSR)
-- ✅ Error handling (404, error boundaries)
-- ✅ TypeScript implementation
-- ✅ Next.js App Router
+<p>
+  <img src="docs/screenshots/contact-list.png" width="45%" alt="Contact List" />
+  <img src="docs/screenshots/contact-details.png" width="45%" alt="Contact Details" />
+</p>
 
-### **Bonus Requirements:**
+## Performance Metrics
 
-- ✅ GraphQL implementation (60% payload reduction vs REST)
-- ✅ UI Library (HeroUI/NextUI)
-- ✅ Responsive design (mobile & tablet)
-- ✅ Loading states & Suspense
-- ✅ Accessibility (ARIA labels)
-- ✅ **E2E Tests with Playwright** (44 tests across 5 browsers)
+![Lighthouse Score](docs/screenshots/lighthouse-score.png)
 
-## 🚀 **Quick Start**
+> **Disclaimer:** Lighthouse tests were run in production & Chrome Incognito mode.
 
-```bash
-# Install dependencies
-npm install
+## E2E Testing Coverage
 
-# Run development server
-npm run dev
+![E2E Testing Results](docs/screenshots/e2e-testing.png)
 
-# Build for production
-npm run build
+Covering a comprehensive testing suite with **44+** test cases across 5 browsers, resulting in ~220 total scenarios
 
-# Run tests
-npm test
+---
 
-# Run tests with UI
-npm run test:ui
+## Table of Contents
+
+- [What This Application Does](#what-this-application-does)
+- [Technical Architecture](#technical-architecture)
+  - [Stack](#stack)
+  - [Caching Strategy](#caching-strategy)
+  - [Routes](#routes)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [SEO Optimization](#seo-optimization)
+- [AI Usage & My Contributions](#ai-usage--my-contributions)
+  - [Parts I Personally Designed & Wrote](#parts-i-personally-designed--wrote)
+  - [Parts Heavily AI-Generated & Edited](#which-parts-were-heavily-ai-generated-and-then-edited-by-me)
+  - [What AI Output I Rejected](#what-ai-output-i-rejected--why)
+  - [My Hardest Decision](#my-hardest-decision)
+  - [Model Context Protocol (MCP)](#model-context-protocol-mcp)
+- [Resources](#resources)
+
+---
+
+## What This Application Does
+
+I built this application as a contact management feature for a CRM system, using the Rick and Morty API as the data source. The core user story was simple:
+
+> **"As a user, I want to see my list of contacts and view their related information."**
+
+This is a full-stack Next.js application that demonstrates how I approach real-world CRM requirements while maintaining code quality, performance, and user experience.
+
+**Core Features (Per Requirements):**
+
+- **Contact List Table** - Display up to 20 contacts with name, status, species, and gender
+- **Name Search** - Search contacts by character name with instant filtering
+- **Multi-Field Filtering** - Filter by status, species, and gender with URL persistence
+- **Persistent State** - Filters and search survive page refreshes via URL parameters
+- **Contact Details** - Dedicated pages (`/contact/:id`) showing:
+  - Header with contact image and name
+  - Personal info (Status, Gender, Species, Location, Origin)
+  - Episode appearances table (Name, Air Date, Episode code)
+- **Pagination** - Navigate through multiple pages of contacts
+- **SEO Optimized** - Custom metadata for all pages
+
+**Bonus Features Implemented:**
+
+- **SEO Optimization** - Implemented comprehensive SEO metatags across all pages:
+  - Contact List Page: `"Contact List - SleekFlow"` with descriptive metadata
+  - Individual Contact Pages: `Dynamic "{Contact Name} | SleekFlow"` titles with personalized descriptions
+- **Contact List Pagination** - Full pagination support with:
+  - Navigate through multiple pages of contacts
+  - URL-based page state for shareable links
+
+**Technical Enhancements I Added:**
+
+- **GraphQL Migration** - Reduced API payload by 60-80% (from REST baseline)
+- **Smart Caching** - 1-hour revalidation strategy for better performance
+- **Responsive Design** - Works seamlessly on mobile, tablet, and desktop
+- **E2E Testing** - 44 Playwright E2E tests across 5 browsers
+- **Accessibility** - Semantic HTML and proper ARIA labels
+
+I intentionally did not prioritize custom UI/UX design. Instead, I used the HeroUI component library for consistency and efficiency, allowing me to focus on architecture, data handling, and performance.
+
+## Technical Architecture
+
+### Stack
+
+I chose this tech stack carefully to balance performance, developer experience, and modern best practices:
+
+| Category           | Technology / Tool                                  |
+| ------------------ | -------------------------------------------------- |
+| Frontend Framework | Next.js 14 (App Router)                            |
+| Language           | TypeScript                                         |
+| Styling            | Tailwind CSS                                       |
+| UI Components      | HeroUI                                             |
+| Data Fetching      | GraphQL (graphql-request) & REST API (alternative) |
+| Animation          | Framer Motion                                      |
+| Testing            | Playwright                                         |
+| Code Quality       | ESLint, Prettier                                   |
+| Deployment         | Vercel                                             |
+
+**Why These Choices?**
+
+- **GraphQL over REST**: This was a game-changer. The REST API returns 21 fields per character, but I only needed 6 for the list view. With GraphQL, I reduced the payload size by 60-80%, which significantly improved load times. I documented this migration in [`graphql-migration.md`](docs/graphql-migration.md).
+
+- **Tailwind CSS**: Utility-first CSS keeps my components clean and makes responsive design much easier to implement.
+
+- **Playwright**: I needed robust E2E testing that works across multiple browsers. Playwright gives me that with excellent developer experience.
+
+### Caching Strategy
+
+I implemented a multi-layered caching approach to optimize performance and reduce unnecessary API calls:
+
+#### 1. **Next.js Data Cache (Primary Layer)**
+
+```typescript
+// src/queries/contacts-graphql.ts
+export async function fetchCharactersContactList(params: FetchParams) {
+  return graphqlClient.request(GET_CHARACTERS_QUERY, variables, {
+    next: {
+      revalidate: 3600, // 1 hour cache
+      tags: ['characters-list'],
+    },
+  });
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+**Why 1 hour?** The Rick and Morty data is relatively static - characters don't change frequently. This strikes a balance between freshness and performance. Users get instant page loads from the cache while still receiving updates within a reasonable timeframe.
 
-## 📁 **Project Structure**
+#### 2. **HTTP Response Caching**
 
-/_
-APP ROUTER:
-src > app > page.tsx
-src > app > contact > [id] > page.tsx
-src > app > contact > search > page.tsx
-_/
+```typescript
+// src/app/contact/[id]/page.tsx
+export const revalidate = 3600; // Cache page for 1 hour
+export const dynamic = 'force-static'; // Pre-render at build time where possible
+```
 
-Search Module:
-endpoint:- localhost:3000/search?term={name}
+I use different caching strategies depending on the page:
 
-path:
-i am aware that the approach of path is overkill of only 2 pages, i just simulate how the app would be if we decide to grow the app
+- **Static pages** (contact details): Pre-rendered at build time, revalidated hourly
+- **Dynamic pages** (search results): Rendered on-demand but cached for subsequent requests
+- **URL-based filtering**: Leverages Next.js automatic request memoization
 
-## 🧪 **Testing**
+#### 3. **Image Optimization**
 
-Comprehensive E2E test suite with **Playwright**:
+```javascript
+// next.config.mjs
+images: {
+  remotePatterns: [{
+    protocol: 'https',
+    hostname: 'rickandmortyapi.com',
+    pathname: '/api/character/avatar/**',
+  }],
+}
+```
 
-- **44 test cases** covering all requirements + bonuses
-- **5 browsers**: Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari
-- **~220 total test scenarios** (44 tests × 5 browsers)
+Next.js automatically optimizes and caches character avatars, serving them in modern formats like WebP with appropriate sizes for different devices.
+
+**Benefits of This Approach:**
+
+- **Instant Navigation**: Most page transitions are near-instantaneous due to cached data
+- **Reduced API Costs**: Fewer requests to the GraphQL endpoint
+- **Better UX**: Users don't see loading spinners for previously visited content
+- **Fresh When Needed**: On-demand revalidation ensures data stays current
+
+### Routes
+
+I structured the routing to be intuitive and SEO-friendly. Here's how the application is organized:
+
+```
+/                           → Contact list (homepage)
+  ├── ?page=2              → Pagination
+  ├── ?name=rick           → Search filter
+  ├── ?status=alive        → Status filter
+  ├── ?species=human       → Species filter
+  └── ?gender=male         → Gender filter
+
+/contact/[id]              → Character detail page
+  ├── /contact/1          → Rick Sanchez
+  └── /contact/999        → 404 (invalid ID)
+
+/search                    → Search results page
+  └── ?name=morty         → Search query
+```
+
+**Routing Decisions:**
+
+1. **Query Parameters Over Client State**: I use URL query parameters for all filters and search. This gives users shareable URLs and makes the back button work naturally.
+
+2. **Dynamic Routes for Details**: The `[id]` pattern gives us clean URLs and enables static generation for popular characters.
+
+3. **Dedicated Search Route**: While search works from anywhere, I have a dedicated `/search` page for better UX and clearer intent.
+
+4. **Type-Safe Routing**: I created a central `paths.ts` helper to ensure all route generation is type-safe:
+
+```typescript
+// src/paths.ts
+const paths = {
+  home() {
+    return '/';
+  },
+  contactShow(id: string) {
+    return `/contact/${id}`;
+  },
+};
+```
+
+---
+
+## Project Structure
+
+I organized the codebase for scalability and maintainability. Here's how everything is structured:
+
+```
+sleekflow_fe_assessment/
+│
+├── Configuration Files
+│   ├── next.config.mjs              # Next.js configuration
+│   ├── tailwind.config.ts           # Tailwind CSS customization
+│   ├── tsconfig.json                # TypeScript settings
+│   ├── playwright.config.ts         # Playwright test configuration
+│   └── package.json                 # Dependencies and scripts
+│
+├── src/                          # Source code
+│   ├── app/                         # Next.js App Router pages
+│   │   ├── layout.tsx              # Root layout with header/footer
+│   │   ├── page.tsx                # Homepage (contact list)
+│   │   ├── error.tsx               # Global error boundary
+│   │   ├── not-found.tsx           # 404 page
+│   │   ├── globals.css             # Global styles
+│   │   │
+│   │   ├── contact/[id]/           # Dynamic contact detail pages
+│   │   │   ├── page.tsx           # Contact detail page
+│   │   │   ├── error.tsx          # Contact-specific error handling
+│   │   │   └── not-found.tsx      # Contact 404 page
+│   │   │
+│   │   ├── search/                 # Search results page
+│   │   │   └── page.tsx
+│   │   │
+│   │   └── constants/              # App-level constants
+│   │       ├── api.ts             # API endpoints & cache config
+│   │       └── filters.ts         # Filter options
+│   │
+│   ├── components/                 # React components
+│   │   ├── common/                # Shared components
+│   │   │   ├── header.tsx
+│   │   │   ├── footer.tsx
+│   │   │   ├── loading.tsx
+│   │   │   └── search-input.tsx
+│   │   │
+│   │   ├── contacts/              # Contact list components
+│   │   │   ├── contact-list.tsx
+│   │   │   ├── contact-pagination.tsx
+│   │   │   └── filter-toolbar.tsx
+│   │   │
+│   │   └── contact-details/       # Contact detail components
+│   │       ├── contact-header.tsx
+│   │       ├── personal-info.tsx
+│   │       ├── episode-list.tsx
+│   │       └── *-skeleton.tsx     # Loading skeletons
+│   │
+│   ├── queries/                    # Data fetching logic
+│   │   ├── contacts-graphql.ts    # GraphQL queries (active)
+│   │   └── contacts-res.old.ts    # Old REST implementation (reference)
+│   │
+│   ├── contexts/                   # React Context providers
+│   │   └── providers.tsx          # UI theme provider
+│   │
+│   ├── utils/                      # Utility functions
+│   │   └── url.ts                 # URL manipulation helpers
+│   │
+│   ├── constants/                  # Global constants
+│   │   └── api.ts                 # API configuration
+│   │
+│   ├── graphql-client.ts          # GraphQL client setup
+│   └── paths.ts                    # Type-safe route definitions
+│
+├── e2e/                         # End-to-end tests
+│   ├── contact-list.spec.ts       # List page tests
+│   ├── contact-details.spec.ts    # Detail page tests
+│   ├── search.spec.ts             # Search functionality tests
+│   ├── filtering.spec.ts          # Filter tests
+│   ├── pagination.spec.ts         # Pagination tests
+│   ├── error-handling.spec.ts     # Error scenario tests
+│   ├── responsive-design.spec.ts  # Mobile/tablet tests
+│   ├── loading-states.spec.ts     # Loading UI tests
+│   ├── graphql-bonus.spec.ts      # GraphQL integration tests
+│   └── README.md                   # Test documentation
+│
+├── docs/                        # Documentation
+│   ├── onboard.md                 # Developer onboarding guide
+│   ├── e2e-testing.md             # E2E testing documentation
+│   ├── graphql-migration.md       # GraphQL migration guide
+│   ├── screenshots/               # Images for README
+│   └── rick-and-morty-graphql-api-full-llms.txt  # API docs for MCP
+│
+└── Build Outputs
+    ├── .next/                     # Next.js build cache
+    ├── playwright-report/         # Test results
+    └── test-results/              # Test artifacts
+```
+
+**Organizational Principles:**
+
+1. **Feature-Based Components**: I group components by feature (contacts, contact-details) rather than by type. This makes it easier to locate related code.
+
+2. **Colocation**: I keep route-specific components close to their routes when they're not reusable.
+
+3. **Clear Separation**: Data fetching (`queries/`), UI logic (`components/`), and routing (`app/`) are clearly separated.
+
+4. **Test Isolation**: E2E tests are in a dedicated `e2e/` folder, making them easy to run independently.
+
+## Testing
+
+I built a comprehensive E2E testing suite with Playwright. Here's what's covered:
+
+### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (headless)
 npm test
 
-# Run with interactive UI
+# Run with UI mode (recommended for development)
 npm run test:ui
 
 # View test report
 npm run test:report
 ```
 
-**See [TESTING.md](TESTING.md) for complete test documentation.**
+### Test Coverage
+
+I wrote **44+ test cases** covering:
+
+- ✅ Contact list rendering and navigation
+- ✅ Contact details page functionality
+- ✅ Search with URL persistence
+- ✅ Multi-filter combinations
+- ✅ Pagination with query parameters
+- ✅ Error handling (404s, invalid data)
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Loading states and skeletons
+- ✅ GraphQL integration verification
+
+**Cross-Browser Testing:**
+All tests run on 5 browsers: Chrome, Firefox, Safari, Mobile Chrome, and Mobile Safari (approximately **220 total test scenarios**).
+
+For detailed testing documentation, see [`TESTING.md`](docs/e2e-testing.md).
 
 ---
 
-## 📚 **Documentation**
+## SEO Optimization
 
-- **[TESTING.md](TESTING.md)** - Complete E2E test documentation
-- **[GRAPHQL_MIGRATION.md](GRAPHQL_MIGRATION.md)** - GraphQL migration guide
-- **[e2e/README.md](e2e/README.md)** - Test suite overview
+I implemented several SEO best practices to ensure the application is discoverable and performs well in search rankings:
 
----
+### 1. **Metadata Management**
 
-## 🏗️ **Architecture**
+I implemented the exact SEO metadata requested in the bonus requirements:
 
-client component with ‘useSearchParams’ need to be wrapped with ‘Suspense’
-Pages that reference ‘searchParams’ will be marked as ‘dynamic’ of build time caching
+**Contact List Page:**
 
-https://www.udemy.com/course/next-js-the-complete-developers-guide/learn/lecture/40938684#content
-
-- I used AI to help with the Tailwind CSS styling in this project. In real work situations, you’d usually get desgins from the UI/UX team anyways, so spending too much times on perfecting styles here didn’t seem necessary in this case.
-- NextUI was chosen for UI components to avoid reiventing common patterns. This approach keeps the codebase maintainable while allowing focus on functional requirements.
-- the commit is one as i use git squash to combine all my work in progress
-  i run with the following command:
-  git add . .....
-  - note to the reviewer that usually in real work env i split the task into different branch with the name commit of the jira ticket, but to keep things simpler i dumb everything in the main
-- **Accessibility:** ARIA labels throughout for screen readers
-- **Performance:** GraphQL reduces payload by 60% vs REST API
-
-### **Development Notes:**
-
-# error handling
-
-//TODO: simulate no internet connection
-show 404 page not found
-
----
-
-- [HeroUI Documentation](https://www.heroui.com/)
-- [Rick and Morty API](https://rickandmortyapi.com/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Playwright Testing](https://playwright.dev/)
-
----
-
-## 👨‍💻 **Author**
-
-Created for SleekFlow Frontend Engineer Assessmente with filters
-
-- Empty state handling
-
-### **Error Handling**
-
-- Custom 404 pages
-- Error boundaries
-- Graceful error messages
-- Network error handling
-
----
-
-## 🌐 **Environment Variables**
-
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
+```typescript
+export const metadata: Metadata = {
+  title: 'Contact List - SleekFlow',
+  description: 'View our list of contacts with their related information.',
+};
 ```
 
-See [.env.example](.env.example) for all available variables.
+**Individual Contact Pages:**
+
+```typescript
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const character = await fetchCharacterById(params.id);
+
+  return {
+    title: `${character.name} | SleekFlow`,
+    description: `View information about ${character.name}`,
+  };
+}
+```
+
+These metadata tags ensure proper display in search results and social media shares.
+
+### 2. **Server-Side Rendering**
+
+All pages are server-rendered by default, which means:
+
+- ✅ Search engines can crawl the full content
+- ✅ Users see content immediately (no loading spinners on first load)
+- ✅ Better Core Web Vitals scores
+
+### 3. **Semantic HTML**
+
+I use proper HTML5 semantic elements:
+
+```html
+<header>
+  ,
+  <nav>
+    ,
+    <main>
+      ,
+      <article>
+        ,
+        <section>
+          ,
+          <footer></footer>
+        </section>
+      </article>
+    </main>
+  </nav>
+</header>
+```
+
+### 4. **Image Optimization**
+
+All character images use Next.js `<Image>` component with:
+
+- Automatic WebP/AVIF conversion
+- Lazy loading
+- Proper `alt` text for accessibility
+- Responsive sizing
+
+### 5. **URL Structure**
+
+Clean, descriptive URLs that are easy for both users and search engines:
+
+```
+Good: /contact/1
+Bad:  /c?id=1&type=character
+```
 
 ---
 
-## 📊 **Performance**
+## AI Usage & My Contributions
 
-- **Payload Reduction:** 60% smaller with GraphQL vs REST
-- **First Load JS:** 87.6 kB (shared)
-- **Route Size:** 1.68 kB avg per route
-- **Image Optimization:** Next.js Image component
-- **Caching:** 1 hour revalidation time
+As per the assessment requirements, here's a transparent breakdown of how I used AI tools and what I personally contributed:
+
+### Parts I Personally Designed & Wrote
+
+**Architecture & Design Decisions:**
+
+- **GraphQL Migration Strategy** - I identified the REST API over-fetching problem by analyzing the payload sizes. The decision to migrate to GraphQL, including the cost-benefit analysis and implementation strategy, was mine. I documented this in [`graphql-migration.md`](docs/graphql-migration.md).
+- **Caching Strategy** - The three-layer caching approach (Next.js data cache, HTTP response caching, image optimization) came from my experience with performance optimization.
+- **Project Structure** - I designed the feature-based component organization and separation of concerns (queries, components, app routes).
+- **URL-Based State Management** - The decision to use URL query parameters instead of client-side state was a deliberate choice for better UX. Filters and search persist across page refreshes with shareable links, e.g., `?/page=2` for pagination or `?name=rick` for search queries.
+- **Component Rendering Strategy** - I decided which components should be client-side versus server-side to balance performance, interactivity, and bundle size.
+- **Route Caching Decisions** - I determined which routes should be time-based (revalidated periodically), on-demand (generated dynamically), or have caching disabled entirely to ensure data freshness and optimal performance.
+- **Skeleton-for-uncached behavior** - Implemented loading skeletons for pages or un-cached components to improve perceived performance and prevent layout shifts.
+
+**Core Implementation:**
+
+- **GraphQL Queries** - I wrote all the GraphQL queries in [`contacts-graphql.ts`](src/queries/contacts-graphql.ts), carefully selecting only the fields needed to minimize payload.
+- **Test Suite Design** - I designed the testing strategy covering 9 test categories with 44+ test cases. The test scenarios and edge cases came from my understanding of what could break.
+- **Component Architecture** - Server vs Client component decisions, Suspense boundaries, and loading state patterns.
+- **Type Definitions** - All TypeScript interfaces and type safety implementations.
+
+### Which parts were heavily AI-generated and then edited by me
+
+**Boilerplate & Repetitive Code:**
+
+- AI helped generate the initial Tailwind CSS classes for layout, but I refined them for responsive design and accessibility.
+- Some of the Playwright test boilerplate was AI-generated, but I wrote all the actual test assertions and edge case scenarios.
+- Initial Next.js config and TypeScript setup had AI assistance, but I customized them (image optimization domains, build settings).
+
+### What AI Output I Rejected & Why
+
+**1. REST API with Client-Side Filtering**
+
+- ❌ **AI Suggested:** Using the REST API and filtering data on the client
+- ✅ **I Chose:** GraphQL with server-side filtering
+- **Why:** The REST endpoint returns 21 fields per character. For 20 contacts, that's unnecessary data transfer. GraphQL lets me request only 6 fields, reducing significant payload.
+
+**2. Client-Side State Management (useState for filters)**
+
+- ❌ **AI Suggested:** Using React useState/useContext for filter state
+- ✅ **I Chose:** URL query parameters with Next.js searchParams
+- **Why:** URL-based state gives users shareable links, makes the back button work naturally, and enables proper SEO. It's more complex to implement but provides better UX.
+
+**3. Manual Fetch with useEffect**
+
+- ❌ **AI Suggested:** Client-side data fetching with useEffect hooks
+- ✅ **I Chose:** React Server Components with streaming
+- **Why:** Server Components give better performance (no client-side JS for data fetching), better SEO (content rendered on server), and simpler code (no loading states in components).
+
+**4. Single Large Component Files**
+
+- ❌ **AI Suggested:** Putting entire pages in one component file
+- ✅ **I Chose:** Feature-based component composition
+- **Why:** Smaller, focused components are easier to test, reuse, and maintain. Each component has a single responsibility.
+
+**5. Generic Error Messages**
+
+- ❌ **AI Generated:** "Something went wrong" everywhere
+- ✅ **I Implemented:** Specific error boundaries with actionable messages
+- **Why:** Users need to know what broke and what they can do about it. Generic errors are frustrating.
+
+### My Hardest Decision
+
+The **hardest decision** was whether to migrate to GraphQL mid-development. I had already implemented the contact list with REST when I noticed the payload size issues:
+
+- REST API: ~8.5KB for 20 contacts (all fields)
+- GraphQL: ~3.2KB for 20 contacts (selected fields)
+
+**The Trade-off:**
+
+- ✅ **Pros:** 60%+ smaller payloads, better performance, demonstrates technical depth
+- ❌ **Cons:** Extra implementation time, learning GraphQL client library, potential bugs
+
+**My Decision:** Migrate to GraphQL
+
+**Why:** In a real CRM, contacts could scale to thousands. Performance and bandwidth matter. Plus, this assessment is about demonstrating my technical thinking, not just meeting minimum requirements. The migration also gave me a chance to show I can identify problems and refactor thoughtfully.
+
+I kept the old REST implementation in [`contacts-res.old.ts`](src/queries/contacts-res.old.ts) as reference and documented the entire migration process in [`graphql-migration.md`](docs/graphql-migration.md).
+
+The hardest decision was the navigation architecture for the contact detail page. The challenge was satisfying four competing requirements simultaneously:
+
+- **Instant navigation** — clicking a contact should show content immediately (smart skeleton for cold, cached data for warm)
+- **Back navigation preserves state** — browser back from the detail must return to the exact list page with filters and pagination intact
+- **In-memory cache across navigations** — revisiting the same contact renders from React Query cache with no skeleton and no network request
+- **SEO for detail pages** — direct URL visits must be server-rendered with full content in page source
+
+### Tools Used
+
+- **GitHub Copilot** - For autocomplete and boilerplate
+- **Claude/GPT** - For debugging specific issues and TypeScript type problems
+- **Model Context Protocol (MCP)** - For providing domain-specific API knowledge to AI
+
+### Model Context Protocol (MCP)
+
+During development, I leveraged the **Model Context Protocol (MCP)** to enhance AI assistance with domain-specific knowledge about the Rick and Morty GraphQL API.
+
+#### What I Did
+
+I created a custom MCP connection to feed AI assistants with comprehensive API documentation from [`docs/rick-and-morty-graphql-api-full-llms.txt`](docs/rick-and-morty-graphql-api-full-llms.txt). This allowed the AI to:
+
+- Understand the complete GraphQL schema (Character, Episode, Location types)
+- Suggest accurate field selections based on actual available fields
+- Help design optimal queries with proper pagination
+- Validate query syntax against actual API structure
+- Recommend performance optimizations and filter combinations
+
+#### MCP Architecture
+
+![MCP Integration Diagram](docs/screenshots/mcp-architecture.png)
+
+_MCP workflow: API Documentation → MCP Server → Enhanced AI Context → Accurate Code Generation_
+
+**How It Works:**
+
+1. **Context Loading** - Complete Rick and Morty GraphQL documentation (schema, types, examples) is indexed by MCP server
+2. **Schema Knowledge** - AI receives structured knowledge about queries (`characters`, `character`, `episodes`), types, and filters
+3. **Field Validation** - AI knows exact field names (`name`, `status`, `species`, `image`, `episode`) without guessing
+4. **Query Generation** - AI suggests optimized queries with proper field selection and pagination
+
+#### Benefits of Using MCP
+
+This integration significantly improved development velocity:
+
+- **100% Accurate Field Selection** - AI knew exact field names (e.g., `air_date` not `airDate`)
+- **First-Try Success** - No trial-and-error with query syntax
+- **Token Efficiency** - Reduced prompt size by supplying structured schema data instead of pasting docs
+- **Better Performance** - AI suggested optimal field selections to minimize payload
+- **Faster Learning** - Helped me understand GraphQL patterns and best practices
+
+#### Real Example
+
+**Without MCP:**
+
+```graphql
+# ❌ Generic guess - field names wrong, missing pagination
+query GetCharacter {
+  character(id: 1) {
+    name
+    info # ❌ This field doesn't exist
+    episodes # ❌ Wrong field name
+  }
+}
+```
+
+**With MCP Context:**
+
+```graphql
+# ✅ Accurate on first try - proper field names, includes pagination info
+query GetCharacters {
+  characters(page: 1, filter: { status: "Alive" }) {
+    info {
+      # ✅ Correct pagination structure
+      count
+      pages
+      next
+    }
+    results {
+      # ✅ Correct results array
+      id
+      name
+      status
+      species
+      gender
+      image # ✅ Correct field names
+      episode {
+        # ✅ Correct relationship structure
+        id
+        name
+        air_date # ✅ Correct snake_case (not airDate)
+        episode
+      }
+    }
+  }
+}
+```
+
+This MCP integration demonstrates how modern development workflows can combine AI assistance with accurate, domain-specific context to produce production-ready code faster and with fewer errors.
 
 ---
 
-## ✅ **Ready for Submission**
+## Resources
 
-- ✅ All requirements fulfilled
-- ✅ All bonus features implemented
-- ✅ Comprehensive E2E tests
-- ✅ ESLint passing (strict rules)
-- ✅ TypeScript strict mode
-- ✅ Mobile responsive
-- ✅ Production build successful
-- ✅ Documentation complete
-
----
-
-## 🔗 **References**
-
-https://www.heroui.com/
-
-      {/* Status Filter */}
-      {/* <div className="flex-1 mb-6 mt-4">
-        <Select placeholder="Species" className="w-full">
-          {speciesOptions.map((species) => (
-            <SelectItem key={species}>{species}</SelectItem>
-          ))}
-        </Select>
-      </div> */}
-
-# Room for improvements
-
-- use GraphQL instead of REST APIs
-
-BEFORE SUBMISSION
-
-- make sure its mobile responsive
-- fulfill all the product requirements
-- readme file
+- [Rick and Morty API](https://rickandmortyapi.com/)
+- [Rick and Morty Github Page](https://github.com/afuh/rick-and-morty-api)
+- [MCP](https://code.claude.com/docs/en/mcp)
+- [HeroUI](https://www.heroui.com/)
+- [Next.js](https://nextjs.org/)
+- [Vercel](https://vercel.com/)
