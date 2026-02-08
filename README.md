@@ -214,6 +214,10 @@ const paths = {
 
 ---
 
+**Route Performances:**
+
+![Route Performances](docs/screenshots/routes-performance.png)
+
 ## Project Structure
 
 I organized the codebase for scalability and maintainability. Here's how everything is structured:
