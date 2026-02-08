@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import Providers from '@/contexts/providers';
 import Header from '@/components/common/header';
 import Footer from '@/components/common/footer';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NextTopLoader color="#2563eb" height={3} showSpinner={false} />
         <div className="container mx-auto px-4 max-w-6xl">
           <Providers>
             <Header />
